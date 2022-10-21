@@ -35,9 +35,11 @@ public:
         AreaSwitcher    = 1 << 5,
         Background      = 1 << 6,
         Trigger         = 1 << 7,
+        CollisionShape  = 1 << 8,
     };
 
     explicit SceneNode(Mask mask);
+    virtual ~SceneNode() = default;
     
     virtual void update(sf::Time dt);
 
@@ -52,7 +54,9 @@ public:
     void checkSceneCollision(SceneNode& sceneGraph, std::set<Pair>& collisionPairs);
     void checkNodeCollision(SceneNode& node, std::set<Pair>& collisionPairs);
 
-    virtual bool isDestroyed() const;
+    bool isMarkedForDestruction() const;
+    void markForDestruction();
+    void removeMarkedChildren();
 
     ScriptPtr getLuaState() const;
     bool loadScriptFile(const std::string& filepath);
@@ -79,6 +83,7 @@ private:
     SceneNode* m_parent;
     const Mask m_mask;
     bool m_debugFlag;
+    bool m_markedForDestruction;
     const ScriptPtr m_script;
 };
 

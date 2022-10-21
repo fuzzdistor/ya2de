@@ -32,6 +32,7 @@ add_executable("${CMAKE_PROJECT_NAME}"
  src/textnode.cpp
  src/tilemapnode.cpp
  src/tileset.cpp
+ src/triggernode.cpp
  src/ysortnode.cpp
  include/init.hpp
  include/input.hpp
@@ -49,6 +50,7 @@ add_executable("${CMAKE_PROJECT_NAME}"
  include/textnode.hpp
  include/tilemapnode.hpp
  include/tileset.hpp
+ include/triggernode.hpp
  include/ysortnode.hpp
 )
 

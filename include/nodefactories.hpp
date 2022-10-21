@@ -1,7 +1,6 @@
 #ifndef TEST_NODEFACTORIES_HPP
 #define TEST_NODEFACTORIES_HPP
 
-#include "spritenode.hpp"
 #include <cassert>
 #include <nlohmann/json.hpp>
 
@@ -28,18 +27,8 @@ public:
         YSortNode,
         TextNode,
         SoundPlayerNode,
+        TriggerNode,
     };
-    // nlohmann json specializations for NodeID enum
-    NLOHMANN_JSON_SERIALIZE_ENUM(NodeID,
-    {
-        { NodeID::SceneNode, "SceneNode" },
-        { NodeID::SpriteNode, "SpriteNode" },
-        { NodeID::TileMapNode, "TileMapNode" },
-        { NodeID::ShapeNode, "ShapeNode" },
-        { NodeID::YSortNode, "YSortNode" },
-        { NodeID::TextNode, "TextNode" },
-        { NodeID::SoundPlayerNode, "SoundPlayerNode" },
-    })
 
     NodeFactories(TextureCollection& textures, FontCollection& fonts, SoundBufferCollection& sounds);
     SceneNode::UniPtr createNode(const ordered_json& recipe) const;
@@ -49,5 +38,17 @@ private:
     std::map<NodeID, FactoryFunction> mNodeConstructors;
     std::map<NodeID, SetterFunction> mNodeSetters;
 };
+    // nlohmann json specializations for NodeID enum
+    NLOHMANN_JSON_SERIALIZE_ENUM(NodeFactories::NodeID,
+    {
+        { NodeFactories::NodeID::SceneNode, "SceneNode" },
+        { NodeFactories::NodeID::SpriteNode, "SpriteNode" },
+        { NodeFactories::NodeID::TileMapNode, "TileMapNode" },
+        { NodeFactories::NodeID::ShapeNode, "ShapeNode" },
+        { NodeFactories::NodeID::YSortNode, "YSortNode" },
+        { NodeFactories::NodeID::TextNode, "TextNode" },
+        { NodeFactories::NodeID::SoundPlayerNode, "SoundPlayerNode" },
+        { NodeFactories::NodeID::TriggerNode, "TriggerNode" },
+    })
 
 #endif // TEST_NODEFACTORIES_HPP

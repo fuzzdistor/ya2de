@@ -7,6 +7,7 @@
 #include "shapenode.hpp"
 #include "textnode.hpp"
 #include "tilemapnode.hpp"
+#include "triggernode.hpp"
 #include "ysortnode.hpp"
 #include <SFML/Audio/Sound.hpp>
 #include <SFML/Graphics/Texture.hpp>
@@ -37,6 +38,23 @@ NodeFactories::NodeFactories(TextureCollection& textures, FontCollection& fonts,
 
         return sn;
     };
+
+    mNodeConstructors[NodeID::TriggerNode] = [&](const ordered_json& recipe) -> SceneNode::UniPtr
+    {
+        Log::Logger logger("Factory::TriggerNodeConstructor");
+
+        logger.info() << "Creating TriggerNode";
+        auto recipeNode = std::make_unique<TriggerNode>();
+
+        logger.info() << "Configuring SceneNode";
+        mNodeSetters[NodeID::SceneNode](recipeNode.get(), recipe);
+
+        logger.info() << "Configuring TriggerNode";
+        mNodeSetters[NodeID::TriggerNode](recipeNode.get(), recipe);
+
+        return recipeNode;
+    };
+
     mNodeConstructors[NodeID::TileMapNode] = [&](const ordered_json& recipe) -> SceneNode::UniPtr
     {
         Log::Logger logger("Factory::TileMapNodeConstructor");
@@ -54,6 +72,7 @@ NodeFactories::NodeFactories(TextureCollection& textures, FontCollection& fonts,
 
         return tmn;
     };
+
     mNodeConstructors[NodeID::ShapeNode] = [&](const ordered_json& recipe) -> SceneNode::UniPtr
     {
         Log::Logger logger("Factory::ShapeNodeConstructor");
@@ -191,6 +210,9 @@ NodeFactories::NodeFactories(TextureCollection& textures, FontCollection& fonts,
         logger.info() << "Checking autoplay";
         if (recipe.contains("autoplay") && recipe["autoplay"].get<bool>())
             spc->play();
+    };
+    mNodeSetters[NodeID::TriggerNode] = [&](SceneNode*, const ordered_json&) -> void
+    {
     };
     mNodeSetters[NodeID::SceneNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {

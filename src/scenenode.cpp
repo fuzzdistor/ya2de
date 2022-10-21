@@ -1,3 +1,4 @@
+#include "scene.hpp"
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/PrimitiveType.hpp>
@@ -60,6 +61,7 @@ SceneNode::SceneNode(SceneNode::Mask mask)
     , m_parent(nullptr)
     , m_mask(mask)
     , m_debugFlag(false)
+    , m_markedForDestruction(false)
     , m_script(std::make_shared<sol::state>(sol::c_call<decltype(&my_panic), &my_panic>))
 {
     m_script->open_libraries(
@@ -125,14 +127,14 @@ void SceneNode::checkSceneCollision(SceneNode& sceneGraph, std::set<Pair>& colli
 
 void SceneNode::checkNodeCollision(SceneNode& node, std::set<Pair>& collisionPairs)
 {
-	if (this != &node && collision(*this, node) && !isDestroyed() && !node.isDestroyed())
+	if (this != &node && collision(*this, node) && !isMarkedForDestruction() && !node.isMarkedForDestruction())
 		collisionPairs.insert(std::minmax(this, &node));
 
 	for(auto& child: m_children)
 		child->checkNodeCollision(node, collisionPairs);
 }
 
-bool SceneNode::isDestroyed() const
+bool SceneNode::isMarkedForDestruction() const
 {
     return false;
 }
@@ -285,4 +287,18 @@ float length(sf::Vector2f vector)
 float distance(const SceneNode& lhs, const SceneNode& rhs)
 {
 	return length(lhs.getWorldPosition() - rhs.getWorldPosition());
+}
+
+void SceneNode::markForDestruction()
+{
+    m_markedForDestruction = true;
+}
+void SceneNode::removeMarkedChildren()
+{
+	// Remove all children which request so
+	auto firstMarked = std::remove_if(m_children.begin(), m_children.end(), std::mem_fn(&SceneNode::isMarkedForDestruction));
+	m_children.erase(firstMarked, m_children.end());
+
+	// Call function recursively for all remaining children
+	std::for_each(m_children.begin(), m_children.end(), std::mem_fn(&SceneNode::removeMarkedChildren));
 }

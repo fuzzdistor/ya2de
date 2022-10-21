@@ -52,6 +52,10 @@ void Scene::update(sf::Time dt)
     handleCollisions();
 
     m_sceneGraph.update(dt);
+
+    m_sceneGraph.removeMarkedChildren();
+
+
 }
 
 void Scene::draw()
@@ -104,7 +108,6 @@ void Scene::buildScene(const ordered_json& recipe)
     Log::Logger logger("Scene::buildScene");
     NodeFactories nf(m_textures, m_fonts, m_sounds);
 
-    ordered_json scene = utils::jsonLoadFromFile("data/scenes/scene1.json");
     logger.info() << "Building scene start";
 
     for (auto& nodeRecipe : recipe)

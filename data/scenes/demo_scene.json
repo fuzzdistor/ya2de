@@ -1,6 +1,6 @@
 [
   {
-    "NodeType": 2,
+    "NodeType": "TileMapNode",
     "datafilepath": "media/tilemaps/room/room.txt",
     "textureid": "BackgroundRoom",
     "position": [
@@ -13,7 +13,7 @@
     ]
   },
   {
-    "NodeType": 2,
+    "NodeType": "TileMapNode",
     "datafilepath": "media/tilemaps/isomap/isomap.txt",
     "textureid": "BackgroundIso",
     "position": [
@@ -23,17 +23,17 @@
     "debug": true
   },
   {
-    "NodeType": 6,
+    "NodeType": "SoundPlayerNode",
     "filepath": "media/music/foolish_villain.ogg",
     "loop": true,
     "autoplay": true
   },
   {
-    "NodeType": 3,
+    "NodeType": "ShapeNode",
     "shape": 0
   },
   {
-    "NodeType": 1,
+    "NodeType": "SpriteNode",
     "textureid": "Player",
     "position": [
       100,
@@ -42,10 +42,10 @@
     "debug": true
   },
   {
-    "NodeType": 4,
+    "NodeType": "YSortNode",
     "children": [
       {
-        "NodeType": 1,
+        "NodeType": "SpriteNode",
         "textureid": "Player",
         "debug": true,
         "origin": [
@@ -55,7 +55,7 @@
         "script": "scripts/playerMover.lua"
       },
       {
-        "NodeType": 1,
+        "NodeType": "SpriteNode",
         "textureid": "Player",
         "debug": true,
         "origin": [
@@ -67,7 +67,7 @@
     ]
   },
   {
-    "NodeType": 5,
+    "NodeType": "TextNode",
     "fontid": "Main",
     "position": [
       -350,
@@ -77,8 +77,18 @@
     "outlinethickness": 2
   },
   {
-    "NodeType": 5,
+    "NodeType": "TextNode",
     "fontid": "Main",
     "script": "scripts/textbox.lua"
+  },
+  {
+    "NodeType": "TriggerNode",
+    "children": [
+      {
+        "NodeType": "ShapeNode",
+        "shape": 0
+      }
+    ]
   }
+     
 ]
