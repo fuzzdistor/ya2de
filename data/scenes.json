@@ -1,0 +1,9 @@
+{
+  "data" :[
+    {
+      "scenename" : "demo scene",
+      "datapath" : "data/scenes/demo_scene.json",
+      "ismainscene" : true
+    }
+  ]
+}

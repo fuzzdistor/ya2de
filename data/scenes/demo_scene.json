@@ -1,0 +1,84 @@
+[
+  {
+    "NodeType": 2,
+    "datafilepath": "media/tilemaps/room/room.txt",
+    "textureid": "BackgroundRoom",
+    "position": [
+      -180,
+      -120
+    ],
+    "scale": [
+      2,
+      2
+    ]
+  },
+  {
+    "NodeType": 2,
+    "datafilepath": "media/tilemaps/isomap/isomap.txt",
+    "textureid": "BackgroundIso",
+    "position": [
+      -100,
+      -120
+    ],
+    "debug": true
+  },
+  {
+    "NodeType": 6,
+    "filepath": "media/music/foolish_villain.ogg",
+    "loop": true,
+    "autoplay": true
+  },
+  {
+    "NodeType": 3,
+    "shape": 0
+  },
+  {
+    "NodeType": 1,
+    "textureid": "Player",
+    "position": [
+      100,
+      100
+    ],
+    "debug": true
+  },
+  {
+    "NodeType": 4,
+    "children": [
+      {
+        "NodeType": 1,
+        "textureid": "Player",
+        "debug": true,
+        "origin": [
+          16,
+          32
+        ],
+        "script": "scripts/playerMover.lua"
+      },
+      {
+        "NodeType": 1,
+        "textureid": "Player",
+        "debug": true,
+        "origin": [
+          16,
+          32
+        ],
+        "script": "scripts/spriteCircle.lua"
+      }
+    ]
+  },
+  {
+    "NodeType": 5,
+    "fontid": "Main",
+    "position": [
+      -350,
+      100
+    ],
+    "charactersize": 20,
+    "outlinethickness": 2
+  },
+  {
+    "NodeType": 5,
+    "fontid": "Main",
+    "script": "scripts/textbox.lua"
+  }
+]

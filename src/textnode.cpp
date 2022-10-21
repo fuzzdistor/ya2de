@@ -65,7 +65,7 @@ TextNode::TextNode()
     m_text.setOutlineColor(sf::Color(0x000000ff));
     m_text.setString("DEFAULT");
 
-    m_soundbuffer.loadFromFile("media/sounds/otsumillie.wav");
+    m_soundbuffer.loadFromFile("media/sounds/m_speech.wav");
     m_sound.setBuffer(m_soundbuffer);
 }
 

@@ -70,7 +70,6 @@ void Scene::loadResources()
 {
     m_fonts.load(FontID::Main, "media/fonts/MesloLGS NF Regular.ttf");
     m_textures.load(TextureID::Player, "media/textures/test.png");
-    m_textures.load(TextureID::Background, "media/tilemaps/test2map/test2map.png");
     m_textures.load(TextureID::BackgroundRoom, "media/tilemaps/room/room.png");
     m_textures.load(TextureID::BackgroundIso, "media/tilemaps/isomap/isomap.png");
 }
