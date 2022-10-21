@@ -1,0 +1,8 @@
+[Bb]uild/
+[Nn]otes/
+[Ll]og.*
+[Rr]un.*
+.vscode/
+.vs/
+compile_flags.txt
+
