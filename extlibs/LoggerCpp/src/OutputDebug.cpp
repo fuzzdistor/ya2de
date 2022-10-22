@@ -36,10 +36,15 @@ void OutputDebug::output(const Channel::Ptr& aChannelPtr, const Log& aLog) const
     char                buffer[256];
 
     // uses snprintf for atomic thread-safe operation
+    _snprintf(buffer, sizeof(buffer), "%.2u:%.2u:%.2u.%.3u  %-12s %s %s\n",
+            time.hour, time.minute, time.second, time.ms,
+            aChannelPtr->getName().c_str(), Log::toString(aLog.getSeverity()), (aLog.getStream()).str().c_str());
+#if 0 // I want to disable the year part of the log
     _snprintf(buffer, sizeof(buffer), "%.4u-%.2u-%.2u %.2u:%.2u:%.2u.%.3u  %-12s %s %s\n",
             time.year, time.month, time.day,
             time.hour, time.minute, time.second, time.ms,
             aChannelPtr->getName().c_str(), Log::toString(aLog.getSeverity()), (aLog.getStream()).str().c_str());
+#endif
     buffer[255] = '\0';
     OutputDebugStringA(buffer);
 }

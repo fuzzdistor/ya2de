@@ -73,7 +73,20 @@ unsigned int OutputConsole::toEscapeCode(Log::Level aLevel) {
 void OutputConsole::output(const Channel::Ptr& aChannelPtr, const Log& aLog) const {
     const DateTime& time = aLog.getTime();
 
+
+#ifdef _WIN32
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), toWin32Attribute(aLog.getSeverity()));
+    fprintf(stdout, "%.2u:%.2u:%.2u.%.3u  %-12s %s %s\n",
+#else  // _WIN32
+    fprintf(stdout, "\x1B[%02um%.2u:%.2u:%.2u.%.3u  %-12s %s %s\x1b[39m\n",
+            toEscapeCode(aLog.getSeverity()),
+#endif // _WIN32
+            time.hour, time.minute, time.second, time.ms,
+            aChannelPtr->getName().c_str(), Log::toString(aLog.getSeverity()), (aLog.getStream()).str().c_str());
+
     // uses fprintf for atomic thread-safe operation
+
+#if 0 // I want to disable the date part of the format cause im not interested
 #ifdef _WIN32
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), toWin32Attribute(aLog.getSeverity()));
     fprintf(stdout, "%.4u-%.2u-%.2u %.2u:%.2u:%.2u.%.3u  %-12s %s %s\n",
@@ -84,6 +97,7 @@ void OutputConsole::output(const Channel::Ptr& aChannelPtr, const Log& aLog) con
             time.year, time.month, time.day,
             time.hour, time.minute, time.second, time.ms,
             aChannelPtr->getName().c_str(), Log::toString(aLog.getSeverity()), (aLog.getStream()).str().c_str());
+#endif
 #ifdef _WIN32
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 #endif // _WIN32
