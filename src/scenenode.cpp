@@ -136,7 +136,7 @@ void SceneNode::checkNodeCollision(SceneNode& node, std::set<Pair>& collisionPai
 
 bool SceneNode::isMarkedForDestruction() const
 {
-    return false;
+    return m_markedForDestruction;
 }
 
 SceneNode::ScriptPtr SceneNode::getLuaState() const

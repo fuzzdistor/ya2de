@@ -2,7 +2,7 @@
   {
     "NodeType": "TileMapNode",
     "datafilepath": "media/tilemaps/room/room.txt",
-    "textureid": "BackgroundRoom",
+    "tilesetid": "Room",
     "position": [
       -180,
       -120
@@ -15,7 +15,7 @@
   {
     "NodeType": "TileMapNode",
     "datafilepath": "media/tilemaps/isomap/isomap.txt",
-    "textureid": "BackgroundIso",
+    "tilesetid": "Iso",
     "position": [
       -100,
       -120
@@ -36,8 +36,8 @@
     "NodeType": "SpriteNode",
     "textureid": "Player",
     "position": [
-      100,
-      100
+      -200,
+      -100
     ],
     "debug": true
   },
@@ -52,7 +52,8 @@
           16,
           32
         ],
-        "script": "scripts/playerMover.lua"
+        "script": "scripts/playerMover.lua",
+        "mask" : "Player"
       },
       {
         "NodeType": "SpriteNode",
@@ -86,7 +87,9 @@
     "children": [
       {
         "NodeType": "ShapeNode",
-        "shape": 0
+        "shape": 0,
+        "mask": "CollisionShape",
+        "debug": true
       }
     ]
   }

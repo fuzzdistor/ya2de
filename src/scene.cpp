@@ -1,4 +1,7 @@
+#include "LoggerCpp/Log.h"
 #include "nodefactories.hpp"
+#include "scenenode.hpp"
+#include "triggernode.hpp"
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -19,7 +22,6 @@
 #include <algorithm>
 #include <memory>
 
-
 Scene::Scene(sf::RenderTarget& outputTarget, FontCollection& fonts, TextureCollection& textures, const std::string& recipePath)
     : m_target(outputTarget)
     , m_sceneTexture()
@@ -29,9 +31,8 @@ Scene::Scene(sf::RenderTarget& outputTarget, FontCollection& fonts, TextureColle
     , m_sounds()
     , m_text()
     , m_sceneGraph(SceneNode::Mask::none)
-      , m_viewStartPosition()
+    , m_viewStartPosition()
 {
-    Log::Logger logger("Scene");
     m_sceneTexture.create(m_target.getSize().x, m_target.getSize().y);
 
     ordered_json sceneRecipe = utils::jsonLoadFromFile(recipePath);
@@ -49,13 +50,10 @@ void Scene::update(sf::Time dt)
     /* while (!mCommandQueue.isEmpty()) */
     /*     mSceneGraph.onCommand(mCommandQueue.pop(), dt); */
 
-    handleCollisions();
-
     m_sceneGraph.update(dt);
 
+    handleCollisions();
     m_sceneGraph.removeMarkedChildren();
-
-
 }
 
 void Scene::draw()
@@ -74,24 +72,37 @@ void Scene::loadResources()
 {
     m_fonts.load(FontID::Main, "media/fonts/MesloLGS NF Regular.ttf");
     m_textures.load(TextureID::Player, "media/textures/test.png");
-    m_textures.load(TextureID::BackgroundRoom, "media/tilemaps/room/room.png");
-    m_textures.load(TextureID::BackgroundIso, "media/tilemaps/isomap/isomap.png");
+    m_tilesets.load(TileSetID::Room, "media/tilemaps/room/room.txt");
+    m_tilesets.load(TileSetID::Iso, "media/tilemaps/isomap/isomap.txt");
 }
 
 bool matchesMask(SceneNode::Pair& colliders, SceneNode::Mask mask1, SceneNode::Mask mask2)
 {
-    auto nodeMask1 = static_cast<unsigned int>(colliders.first->getMask());
-    auto nodeMask2 = static_cast<unsigned int>(colliders.second->getMask());
+    Log::Logger logger("matchesMask");
 
-    auto checkMask1 = static_cast<unsigned int>(mask1);
-    auto checkMask2 = static_cast<unsigned int>(mask2);
+    /* auto nodeMask1 = static_cast<unsigned int>(colliders.first->getMask()); */
+    /* auto nodeMask2 = static_cast<unsigned int>(colliders.second->getMask()); */
+
+    /* auto checkMask1 = static_cast<unsigned int>(mask1); */
+    /* auto checkMask2 = static_cast<unsigned int>(mask2); */
+
+    auto nodeMask1 = colliders.first->getMask();
+    auto nodeMask2 = colliders.second->getMask();
+
+    auto checkMask1 = mask1;
+    auto checkMask2 = mask2;
+
 
     // Make sure first pair entry has category type1 and second has type2
-    if (checkMask1 & nodeMask1 && checkMask2 & nodeMask2)
-        return true;
-
-    if (checkMask1 & nodeMask2 && checkMask2 & nodeMask1)
+    if (checkMask1 == nodeMask1 && checkMask2 == nodeMask2)
     {
+        logger.info() << "mask hit!";
+        return true;
+    }
+
+    if (checkMask1 == nodeMask2 && checkMask2 == nodeMask1)
+    {
+        logger.info() << "mask hit!";
         std::swap(colliders.first, colliders.second);
         return true;
     }
@@ -101,22 +112,35 @@ bool matchesMask(SceneNode::Pair& colliders, SceneNode::Mask mask1, SceneNode::M
 
 void Scene::handleCollisions()
 {
+    std::set<SceneNode::Pair> collisionPairs;
+    m_sceneGraph.checkSceneCollision(m_sceneGraph, collisionPairs);
+
+    for (auto pair : collisionPairs)
+    {
+        if (matchesMask(pair, SceneNode::Mask::Player, SceneNode::Mask::Trigger))
+        {
+            auto player = static_cast<SpriteNode*>(pair.first);
+            auto trigger = static_cast<TriggerNode*>(pair.second);
+            trigger->applyCallbackTo(player);
+        }
+    }
 }
 
 void Scene::buildScene(const ordered_json& recipe)
 {
-    Log::Logger logger("Scene::buildScene");
-    NodeFactories nf(m_textures, m_fonts, m_sounds);
+    m_logger.debug() << "buildScene";
 
-    logger.info() << "Building scene start";
+    NodeFactories nf(m_textures, m_fonts, m_sounds, m_tilesets);
+
+    m_logger.info() << "Building scene start";
 
     for (auto& nodeRecipe : recipe)
     {
-        logger.debug() << nodeRecipe.dump();
+        m_logger.debug() << nodeRecipe.dump();
         m_sceneGraph.attachChild(nf.createNode(nodeRecipe));
     }
 
-    logger.info() << "Finished building scene!";
+    m_logger.info() << "Finished building scene!";
 }
 
 sf::FloatRect Scene::getViewBounds() const

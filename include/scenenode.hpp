@@ -1,6 +1,7 @@
 #ifndef TEST_SCENENODE_HPP
 #define TEST_SCENENODE_HPP
 
+#include "nlohmann/json.hpp"
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
@@ -25,17 +26,19 @@ public:
     typedef std::shared_ptr<sol::state> ScriptPtr;
     typedef std::pair<SceneNode*, SceneNode*> Pair;
 
-    enum class Mask
+    // Mask enums are set up with this bitshift operators so that their binary
+    // representation can be composed of different base masks
+    enum class Mask : unsigned int
     {
-        none            = 0,
-        Player          = 1 << 1,
-        CollisionObject = 1 << 2,
-        NonPlayable     = 1 << 3,
-        Enemy           = 1 << 4,
-        AreaSwitcher    = 1 << 5,
-        Background      = 1 << 6,
-        Trigger         = 1 << 7,
-        CollisionShape  = 1 << 8,
+        none            = 0,        //0
+        Player          = 1 << 0,   //1
+        CollisionObject = 1 << 1,   //2
+        NonPlayable     = 1 << 2,   //4
+        Enemy           = 1 << 3,   //8
+        AreaSwitcher    = 1 << 4,   //16
+        Background      = 1 << 5,   //32
+        Trigger         = 1 << 6,   //64
+        CollisionShape  = 1 << 7,   //128
     };
 
     explicit SceneNode(Mask mask);
@@ -63,6 +66,7 @@ public:
 
     void setDebugInfo(bool debug);
 
+    void setMask(Mask mask) { m_mask = mask; }
     constexpr Mask getMask() const { return m_mask; }
     constexpr bool isDebug() const { return m_debugFlag; }
 
@@ -81,7 +85,7 @@ protected:
 
 private:
     SceneNode* m_parent;
-    const Mask m_mask;
+    Mask m_mask;
     bool m_debugFlag;
     bool m_markedForDestruction;
     const ScriptPtr m_script;
@@ -89,6 +93,18 @@ private:
 
 bool	collision(const SceneNode& lhs, const SceneNode& rhs);
 float	distance(const SceneNode& lhs, const SceneNode& rhs);
+
+NLOHMANN_JSON_SERIALIZE_ENUM(SceneNode::Mask, {
+    { SceneNode::Mask::none, "none" }, 
+    { SceneNode::Mask::Player, "Player" }, 
+    { SceneNode::Mask::CollisionObject, "CollisionObject" }, 
+    { SceneNode::Mask::NonPlayable, "NonPlayable" }, 
+    { SceneNode::Mask::Enemy, "Enemy" }, 
+    { SceneNode::Mask::AreaSwitcher, "AreaSwitcher" }, 
+    { SceneNode::Mask::Background, "Background" }, 
+    { SceneNode::Mask::Trigger, "Trigger" }, 
+    { SceneNode::Mask::CollisionShape, "CollisionShape" }, 
+})
 
 #endif  // TEST_SCENENODE_HPP
 

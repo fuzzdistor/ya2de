@@ -8,6 +8,7 @@
 #include <nlohmann/json.hpp>
 
 #include <tilemapnode.hpp>
+#include <resourceidentifiers.hpp>
 #include <tileset.hpp>
 #include <utils.hpp>
 
@@ -17,38 +18,44 @@
 #include <vector>
 #include <cmath>
 
-
-TileMapNode::TileMapNode(const std::string& jsonDataFilePath, const sf::Texture& tileMapTexture)
+TileMapNode::TileMapNode()
     : SceneNode(Mask::Background)
-    , m_tileSet(tileMapTexture)
+    , m_tileSet()
     , m_layerSprite()
-    , m_tileMaps()
+    , m_tileMapLayers()
     , m_mapTextures()
 {
+    d_font.loadFromFile("media/fonts/Metropolis-SemiBold.otf");
+    d_text.setFont(d_font);
+    d_text.setCharacterSize(10U);
+    d_text.setFillColor(sf::Color::White);
+    d_text.setOutlineThickness(1U);
+    d_text.setOutlineColor(sf::Color::Black);
+}
 
+TileMapNode::TileMapNode(const std::string& jsonDataFilePath, const TileSet& tileSet)
+    : SceneNode(Mask::Background)
+    , m_tileSet(&tileSet)
+    , m_layerSprite()
+    , m_tileMapLayers()
+    , m_mapTextures()
+{
     const json mapData = utils::jsonLoadFromFile(jsonDataFilePath);
 
     // TileSetter has different fields for square and isometric tilesets
     // if it is an isometric tileset then it has tile_width as a field
-    m_isIsometric = mapData.contains("tile_width");
+    m_tileType = tileSet.getType();
 
-    if(m_isIsometric)
-        m_tileSet.setTileSize(mapData["tile_height"]);
-    else
-        m_tileSet.setTileSize(mapData["tile_size"]);
+    m_mapWidth = mapData["map_width"];
+    m_mapHeight = mapData["map_height"];
 
-    m_tileSet.setIsometric(m_isIsometric);
-
-    m_width = mapData["map_width"];
-    m_height = mapData["map_height"];
-
-    const json layers = mapData["layers"];
+    m_mapLayerInfo = mapData["layers"];
 
     // builds maps AND the textures. I'm planning to eventually
     // separate the functions lauer with a texture update function 
     // that refreshes the textures after a runtime change by an event
     // or player interaction
-    buildMap(layers);
+    buildMap();
 
     d_font.loadFromFile("media/fonts/Metropolis-SemiBold.otf");
     d_text.setFont(d_font);
@@ -60,7 +67,7 @@ TileMapNode::TileMapNode(const std::string& jsonDataFilePath, const sf::Texture&
 
 void TileMapNode::setTileSize(float size)
 {
-    float scale = size / static_cast<float>(m_tileSet.getUnitPixelSize());
+    float scale = size / static_cast<float>(m_tileSet->getTileHeight());
     m_layerSprite.setScale(scale, scale);
 }
 
@@ -69,17 +76,39 @@ void TileMapNode::setTileScale(float scale)
     m_layerSprite.setScale(scale, scale);
 }
 
-void TileMapNode::buildMap(const json& layers)
+void TileMapNode::setMapInfo(const std::string& mapInfoPath)
 {
-    for(auto& layer: layers)
+    const json mapData = utils::jsonLoadFromFile(mapInfoPath);
+
+    m_mapWidth = mapData["map_width"];
+    m_mapHeight = mapData["map_height"];
+
+    m_mapLayerInfo = mapData["layers"];
+
+
+    if(m_tileSet != nullptr)
+        buildMap();
+}
+
+void TileMapNode::setTileSet(const TileSet& tileSet)
+{
+    m_tileSet = &tileSet;
+    m_tileType = tileSet.getType();
+    if (!m_mapLayerInfo.empty())
+        buildMap();
+}
+
+void TileMapNode::buildMap()
+{
+    for(auto& layer: m_mapLayerInfo)
     {
-        auto& tileMap = m_tileMaps.emplace_back();
+        auto& tileMapLayer = m_tileMapLayers.emplace_back();
         for(auto& tile: layer["positions"])
         {
-            tileMap.push_back({
-                    tile["x"].get<unsigned int>()
-                    , tile["y"].get<unsigned int>()
-                    , tile["id"].get<int>()});
+            tileMapLayer.emplace_back(Cell<unsigned int>(
+                        tile["x"]
+                        , tile["y"]
+                        , tile["id"]));
         }
     }
 
@@ -88,27 +117,27 @@ void TileMapNode::buildMap(const json& layers)
 
 void TileMapNode::buildTextures()
 {
-    const sf::Image tileset = m_tileSet.getTexture().copyToImage();
+    const sf::Image tileset = m_tileSet->getTexture().copyToImage();
 
     // tilePixelUnit is the base size in pixels for tiles
     // Square tiles are 1 Unit x 1 Unit in size.
     // Isometric tiles are 2 Units x 1 Unit in size.
-    unsigned int tilePixelUnit = m_tileSet.getUnitPixelSize();
+    unsigned int tilePixelUnit = m_tileSet->getTileHeight();
 
-    for(const auto& layer: m_tileMaps)
+    for(const auto& layer: m_tileMapLayers)
     {
         sf::Image layerImage;
         unsigned int pixelWidth;
         unsigned int pixelHeight;
-        if(m_isIsometric)
+        if(m_tileType == TileSet::Type::Isometric)
         {
-            pixelWidth  = (m_width + m_height) * tilePixelUnit;
-            pixelHeight = (m_height + m_width) * tilePixelUnit/2;
+            pixelWidth  = (m_mapWidth + m_mapHeight) * tilePixelUnit;
+            pixelHeight = (m_mapHeight + m_mapWidth) * tilePixelUnit/2;
         }
-        else 
+        if(m_tileType == TileSet::Type::Square)
         {
-            pixelWidth  = m_width * tilePixelUnit;
-            pixelHeight = m_height * tilePixelUnit;
+            pixelWidth  = m_mapWidth * tilePixelUnit;
+            pixelHeight = m_mapHeight * tilePixelUnit;
         }
         
         layerImage.create(pixelWidth, pixelHeight, sf::Color::Transparent);
@@ -117,15 +146,15 @@ void TileMapNode::buildTextures()
         {
             // the build order for normal tilemaps is top to bottom 
             // in columns from left to right
-            sf::IntRect rect = m_tileSet.getTile(static_cast<size_t>(tile.id)).textureRect;
+            sf::IntRect rect = sf::IntRect(m_tileSet->getTile(tile.id).textureRect);
             sf::Vector2u destination;
 
-            if(m_isIsometric)
+            if(m_tileType == TileSet::Type::Isometric)
             {
-                destination.x = (m_height - tile.y + tile.x) * tilePixelUnit;
+                destination.x = (m_mapHeight - tile.y + tile.x) * tilePixelUnit;
                 destination.y = (tile.x + tile.y) * tilePixelUnit/2;
             }
-            else
+            if(m_tileType == TileSet::Type::Square)
             {
                 destination.x = tile.x * tilePixelUnit;
                 destination.y = tile.y * tilePixelUnit;
@@ -133,6 +162,7 @@ void TileMapNode::buildTextures()
 
             layerImage.copy(tileset, destination.x, destination.y, rect, true);
         }
+
         auto& layerTexture = m_mapTextures.emplace_back();
         layerTexture.loadFromImage(layerImage);
     }
@@ -171,19 +201,21 @@ void TileMapNode::drawTileIndex(sf::RenderTarget& target, sf::RenderStates state
     /* sp.setTextureRect(m_tileSet.getTile(index).textureRect); */
     /* target.draw(sp, states); */
 
-    if(d_cachedPositions.size() != m_tileMaps.back().size())
+    if(d_cachedPositions.size() != m_tileMapLayers.back().size())
     {
-        float tileUnitSize = static_cast<float>(m_tileSet.getUnitPixelSize());
-        for(auto& tile: m_tileMaps.back())
+        float tileUnitSize = static_cast<float>(m_tileSet->getTileHeight());
+
+        // Get the indexes for just the top-most layer
+        for(auto& tile: m_tileMapLayers.back())
         {
             float x = 0.f;
             float y = 0.f;
-            if(m_isIsometric)
+            if(m_tileType == TileSet::Type::Isometric)
             {
-                x = static_cast<float>(m_height - tile.y + tile.x) * tileUnitSize + tileUnitSize / 2.f;
+                x = static_cast<float>(m_mapHeight - tile.y + tile.x) * tileUnitSize + tileUnitSize / 2.f;
                 y = static_cast<float>(tile.x + tile.y) * tileUnitSize/2.f;
             } 
-            else 
+            if(m_tileType == TileSet::Type::Square)
             {
                 x = static_cast<float>(tile.x) * tileUnitSize;
                 y = static_cast<float>(tile.y) * tileUnitSize;

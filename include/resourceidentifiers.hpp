@@ -7,6 +7,9 @@
 #include <SFML/Audio/SoundBuffer.hpp>
 #include <nlohmann/json.hpp>
 
+#include <tileset.hpp>
+
+
 #define TEXTURE_IDS \
 X(none, "TextureID::none") \
 X(Background, "TextureID::Background") \
@@ -36,6 +39,9 @@ X(none,"MusicID::none") \
 X(MenuTheme,"MusicID::MenuTheme") \
 X(FoolishVilain,"MusicID::FoolishVilain") \
 
+#define TILESET_IDS \
+X(Room,"TileSetID::Room") \
+X(Iso,"TileSetID::Iso") \
 
 #define X(texture, name) texture,
 enum class TextureID
@@ -45,10 +51,10 @@ enum class TextureID
 #undef X
 
 #define X(texture, name) name,
-static const char* texture_names[] =
+[[gnu::unused]] static const char* texture_names[] =
 {
     TEXTURE_IDS
-};
+}; 
 #undef X
 
 #define X(font, name) font,
@@ -59,7 +65,7 @@ enum class FontID
 #undef X
 
 #define X(font, name) name,
-static const char* font_names[] =
+[[gnu::unused]] static const char* font_names[] =
 {
     FONTS_IDS
 };
@@ -73,7 +79,7 @@ enum class ShaderID
 #undef X
 
 #define X(shader, name) name,
-static const char* shader_names[] =
+[[gnu::unused]] static const char* shader_names[] =
 {
     SHADER_IDS
 };
@@ -87,11 +93,26 @@ enum class SoundEffectID
 #undef X
 
 #define X(soundeffect, name) name,
-static const char* soundeffect_names[] =
+[[gnu::unused]] static const char* soundeffect_names[] =
 {
     SOUNDEFFECT_IDS
 };
 #undef X
+
+#define X(tileset, name) tileset,
+enum class TileSetID
+{
+    TILESET_IDS
+};
+#undef X
+
+#define X(tileset, name) name,
+[[gnu::unused]] static const char* tileset_names[] =
+{
+    TILESET_IDS
+};
+#undef X
+
 
 NLOHMANN_JSON_SERIALIZE_ENUM(TextureID,
 {
@@ -108,6 +129,12 @@ NLOHMANN_JSON_SERIALIZE_ENUM(FontID,
     { FontID::Metropolis_SemiBold, "Metropolis_SemiBold" },
 })
 
+NLOHMANN_JSON_SERIALIZE_ENUM(TileSetID,
+{
+    { TileSetID::Room, "Room" },
+    { TileSetID::Iso, "Iso" },
+})
+
 // Forward declaration and a few type definitions
 template <typename Resource, typename Identifier>
 class ResourceCollection;
@@ -115,6 +142,7 @@ class ResourceCollection;
 typedef ResourceCollection<sf::Texture, TextureID>			    TextureCollection;
 typedef ResourceCollection<sf::Font, FontID>					FontCollection;
 typedef ResourceCollection<sf::Shader, ShaderID>				ShaderCollection;
-typedef ResourceCollection<sf::SoundBuffer, SoundEffectID>	SoundBufferCollection;
+typedef ResourceCollection<sf::SoundBuffer, SoundEffectID>	    SoundBufferCollection;
+typedef ResourceCollection<TileSet, TileSetID>	                TileSetCollection;
 
 #endif // TEST_RESOURCEIDENTIFIERS_HPP 

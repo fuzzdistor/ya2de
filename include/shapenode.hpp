@@ -15,19 +15,20 @@ public:
         Circle,
     };
 
-    NLOHMANN_JSON_SERIALIZE_ENUM(Shapes,
-    {
-        { Shapes::Rectangle, "Rectangle" },
-        { Shapes::Circle, "Circle" },
-    })
-
+    ShapeNode();
     ShapeNode(const Shapes& shape);
 
 private:
     virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
+    sf::FloatRect getBoundingRect() const override;
 
     sf::RectangleShape m_shape;
     Shapes m_shapeID;
 };
+
+NLOHMANN_JSON_SERIALIZE_ENUM(ShapeNode::Shapes, {
+    { ShapeNode::Shapes::Rectangle, "Rectangle" },
+    { ShapeNode::Shapes::Circle, "Circle" },
+})
 
 #endif // TEST_SHAPENODE_HPP

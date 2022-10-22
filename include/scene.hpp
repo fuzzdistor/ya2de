@@ -1,6 +1,7 @@
 #ifndef TEST_SCENE_HPP
 #define TEST_SCENE_HPP
 
+#include "LoggerCpp/Logger.h"
 #include "nodefactories.hpp"
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
@@ -42,12 +43,15 @@ private:
     TextureCollection& m_textures;
     FontCollection& m_fonts;
     SoundBufferCollection m_sounds;
+    TileSetCollection m_tilesets;
     sf::Text m_text;
     //SoundPlayer& m_sounds;
 
     SceneNode m_sceneGraph;
     sf::Vector2f m_viewStartPosition;
     //CommandQueue m_commandQueue;
+
+    Log::Logger m_logger{ "Scene" };
 };
 
 #endif // TEST_SCENE_HPP

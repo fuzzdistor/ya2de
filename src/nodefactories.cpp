@@ -1,4 +1,3 @@
-#include "LoggerCpp/Logger.h"
 #include "resourceidentifiers.hpp"
 #include "resourcecollection.hpp"
 #include "scenenode.hpp"
@@ -13,234 +12,173 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <memory>
 #include <nodefactories.hpp>
+#include <stdexcept>
 
-NodeFactories::NodeFactories(TextureCollection& textures, FontCollection& fonts, SoundBufferCollection& sounds)
-    : mNodeConstructors()
-    , mNodeSetters()
+SceneNode::UniPtr NodeFactories::nodeConstructor(const ordered_json& recipe) const
 {
-    ////////////////
-    // CONSTRUCTORS
-    ////////////////
-    mNodeConstructors[NodeID::SpriteNode] = [&](const ordered_json& recipe) -> SceneNode::UniPtr
+    NodeID id = recipe["NodeType"];
+
+    m_logger.debug() << "NodeConstructor";
+
+    m_logger.debug() << "Creating Node";
+
+    SceneNode::UniPtr node;
+    switch (id)
     {
-        Log::Logger logger("Factory::SpriteNodeConstructor");
+        case NodeID::SpriteNode:
+            node = std::make_unique<SpriteNode>();
+            break;
+        case NodeID::TileMapNode:
+            node = std::make_unique<TileMapNode>();
+            break;
+        case NodeID::ShapeNode:
+            node = std::make_unique<ShapeNode>();
+            break;
+        case NodeID::YSortNode:
+            node = std::make_unique<YSortNode>();
+            break;
+        case NodeID::TextNode:
+            node = std::make_unique<TextNode>();
+            break;
+        case NodeID::SoundPlayerNode:
+            node = std::make_unique<SoundPlayerNode>();
+            break;
+        case NodeID::TriggerNode:
+            node = std::make_unique<TriggerNode>();
+            break;
+        case NodeID::SceneNode:
+            throw std::logic_error("SceneNode is not a valid node");
+            break;
+    }
 
-        logger.info() << "Creating SpriteNode";
-        auto sn = recipe.contains("textureid")?
-            std::make_unique<SpriteNode>(textures.get(recipe["textureid"].get<TextureID>())) 
-            : std::make_unique<SpriteNode>();
+    m_logger.debug() << "Configuring SceneNode";
+    m_nodeSetters.at(NodeID::SceneNode)(node.get(), recipe);
 
-        logger.info() << "Configuring SceneNode";
-        mNodeSetters[NodeID::SceneNode](sn.get(), recipe);
+    m_logger.debug() << "Configuring DerivedNode";
+    m_nodeSetters.at(id)(node.get(), recipe);
 
-        logger.info() << "Configuring SpriteNode";
-        mNodeSetters[NodeID::SpriteNode](sn.get(), recipe);
+    return node;
+}
 
-        return sn;
-    };
-
-    mNodeConstructors[NodeID::TriggerNode] = [&](const ordered_json& recipe) -> SceneNode::UniPtr
-    {
-        Log::Logger logger("Factory::TriggerNodeConstructor");
-
-        logger.info() << "Creating TriggerNode";
-        auto recipeNode = std::make_unique<TriggerNode>();
-
-        logger.info() << "Configuring SceneNode";
-        mNodeSetters[NodeID::SceneNode](recipeNode.get(), recipe);
-
-        logger.info() << "Configuring TriggerNode";
-        mNodeSetters[NodeID::TriggerNode](recipeNode.get(), recipe);
-
-        return recipeNode;
-    };
-
-    mNodeConstructors[NodeID::TileMapNode] = [&](const ordered_json& recipe) -> SceneNode::UniPtr
-    {
-        Log::Logger logger("Factory::TileMapNodeConstructor");
-
-        logger.info() << "Creating TileMapNode";
-        auto tmn = std::make_unique<TileMapNode>(
-                recipe["datafilepath"].get_ref<const std::string&>()
-                , textures.get(recipe["textureid"].get<TextureID>()));
-
-        logger.info() << "Configuring SceneNode";
-        mNodeSetters[NodeID::SceneNode](tmn.get(), recipe);
-
-        logger.info() << "Configuring TileMapNode";
-        mNodeSetters[NodeID::TileMapNode](tmn.get(), recipe);
-
-        return tmn;
-    };
-
-    mNodeConstructors[NodeID::ShapeNode] = [&](const ordered_json& recipe) -> SceneNode::UniPtr
-    {
-        Log::Logger logger("Factory::ShapeNodeConstructor");
-
-        logger.info() << "Creating ShapeNode";
-        auto sn = std::make_unique<ShapeNode>(
-                recipe["shape"].get<ShapeNode::Shapes>());
-
-        logger.info() << "Configuring SceneNode";
-        mNodeSetters[NodeID::SceneNode](sn.get(), recipe);
-
-        logger.info() << "Configuring ShapeNode";
-        mNodeSetters[NodeID::ShapeNode](sn.get(), recipe);
-
-        return sn;
-    };
-    mNodeConstructors[NodeID::YSortNode] = [&](const ordered_json& recipe) -> SceneNode::UniPtr
-    {
-        Log::Logger logger("Factory::YSortNode");
-
-        logger.info() << "Creating YSortNode";
-        auto ysn = std::make_unique<YSortNode>();
-
-        logger.info() << "Configuring SceneNode";
-        mNodeSetters[NodeID::SceneNode](ysn.get(), recipe);
-
-        logger.info() << "Configuring YSortNode";
-        mNodeSetters[NodeID::YSortNode](ysn.get(), recipe);
-
-        return ysn;
-    };
-    mNodeConstructors[NodeID::TextNode] = [&](const ordered_json& recipe) -> SceneNode::UniPtr
-    {
-        Log::Logger logger("Factory::TextNode");
-
-        logger.info() << "Creating TextNode";
-        auto tn = std::make_unique<TextNode>();
-
-        logger.info() << "Configuring SceneNode";
-        mNodeSetters[NodeID::SceneNode](tn.get(), recipe);
-
-        logger.info() << "Configuring TextNode";
-        mNodeSetters[NodeID::TextNode](tn.get(), recipe);
-
-        return tn;
-    };
-    mNodeConstructors[NodeID::SoundPlayerNode] = [&](const ordered_json& recipe) -> SceneNode::UniPtr
-    {
-        Log::Logger logger("Factory::SoundPlayerNode");
-
-        logger.info() << "Creating SoundPlayerNode";
-        auto spn = std::make_unique<SoundPlayerNode>();
-
-        logger.info() << "Configuring SceneNode";
-        mNodeSetters[NodeID::SceneNode](spn.get(), recipe);
-
-        logger.info() << "Configuring SoundPlayerNode";
-        mNodeSetters[NodeID::SoundPlayerNode](spn.get(), recipe);
-
-        return spn;
-    };
-
+NodeFactories::NodeFactories(TextureCollection& textures, FontCollection& fonts, SoundBufferCollection& sounds, TileSetCollection& tilesets)
+    : m_nodeSetters()
+{
     //////////////
     // SETTERS
     //////////////
-    mNodeSetters[NodeID::SpriteNode] = [&](SceneNode*, const ordered_json&) -> void
+    m_nodeSetters[NodeID::SpriteNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {
+        m_logger.debug() << "SpriteNodeSetter";
+        auto recipeNode = static_cast<SpriteNode*>(node);
+        m_logger.debug() << "Checking textureid";
+        if(recipe.contains("textureid"))
+            recipeNode->setTexture(textures.get(recipe["textureid"].get<TextureID>()));
+
     };
-    mNodeSetters[NodeID::TileMapNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
+    m_nodeSetters[NodeID::TileMapNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {
-        Log::Logger logger("Factory::TileMapSetter");
-        auto tmn = dynamic_cast<TileMapNode*>(node);
+        m_logger.debug() << "TileMapSetter";
+        auto tmn = static_cast<TileMapNode*>(node);
 
-        // check if the dynamic_cast succeded
-        assert(tmn != nullptr);
 
-        logger.info() << "Checking tilescale";
+        m_logger.debug() << "Checking datafilepath";
+        if(recipe.contains("datafilepath"))
+            tmn->setMapInfo(recipe["datafilepath"].get_ref<const std::string&>());
+
+        m_logger.debug() << "Checking tilesetid";
+        if(recipe.contains("tilesetid"))
+            tmn->setTileSet(tilesets.get(recipe["tilesetid"].get<TileSetID>()));
+
+        m_logger.debug() << "Checking tilescale";
         if(recipe.contains("tilescale"))
             tmn->setTileScale(recipe["tilescale"].get<float>());
 
-        logger.info() << "Checking tilesize";
+        m_logger.debug() << "Checking tilesize";
         if(recipe.contains("tilesize"))
             tmn->setTileSize(recipe["tilesize"].get<float>());
     };
-    mNodeSetters[NodeID::ShapeNode] = [&](SceneNode*, const ordered_json&) -> void
+    m_nodeSetters[NodeID::ShapeNode] = [&](SceneNode*, const ordered_json&) -> void
     {
     };
-    mNodeSetters[NodeID::YSortNode] = [&](SceneNode*, const ordered_json&) -> void
+    m_nodeSetters[NodeID::YSortNode] = [&](SceneNode*, const ordered_json&) -> void
     {
     };
-    mNodeSetters[NodeID::TextNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
+    m_nodeSetters[NodeID::TextNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {
-        Log::Logger logger("Factory::TextNodeSetter");
-        auto tmn = dynamic_cast<TextNode*>(node);
+        m_logger.debug() << "TextNodeSetter";
+        auto tmn = static_cast<TextNode*>(node);
 
-        // check if the dynamic_cast succeded
-        assert(tmn != nullptr);
-
-        logger.info() << "Checking fontid";
+        m_logger.debug() << "Checking fontid";
         if(recipe.contains("fontid"))
             tmn->setFont(fonts.get(recipe["fontid"].get<FontID>()));
 
-        logger.info() << "Checking charactersize";
+        m_logger.debug() << "Checking charactersize";
         if(recipe.contains("charactersize"))
             tmn->setCharacterSize(recipe["charactersize"].get<unsigned int>());
 
-        logger.info() << "Checking outlinethickness";
+        m_logger.debug() << "Checking outlinethickness";
         if(recipe.contains("outlinethickness"))
             tmn->setOutlineThickness(recipe["outlinethickness"].get<float>());
 
-        logger.info() << "Checking fillcolor";
+        m_logger.debug() << "Checking fillcolor";
         if(recipe.contains("fillcolor"))
             tmn->setFillColor(sf::Color(recipe["fillcolor"].get<unsigned int>()));
 
-        logger.info() << "Checking outlinecolor";
+        m_logger.debug() << "Checking outlinecolor";
         if(recipe.contains("outlinecolor"))
             tmn->setOutlineColor(sf::Color(recipe["outlinecolor"].get<unsigned int>()));
     };
-    mNodeSetters[NodeID::SoundPlayerNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
+    m_nodeSetters[NodeID::SoundPlayerNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {
-        Log::Logger logger("Factory::SoundPlayerSetter");
-        auto spc = dynamic_cast<SoundPlayerNode*>(node);
+        m_logger.debug() << "SoundPlayerSetter";
+        auto spc = static_cast<SoundPlayerNode*>(node);
 
-        // check if the dynamic_cast succeded
-        assert(spc != nullptr);
-
-        logger.info() << "Checking filepath";
+        m_logger.debug() << "Checking filepath";
         if (recipe.contains("filepath"))
             spc->setSoundSource(recipe["filepath"].get_ref<const std::string&>());
 
-        logger.info() << "Checking loop";
+        m_logger.debug() << "Checking loop";
         if (recipe.contains("loop"))
             spc->setLoop(recipe["loop"].get<bool>());
 
-        logger.info() << "Checking autoplay";
+        m_logger.debug() << "Checking autoplay";
         if (recipe.contains("autoplay") && recipe["autoplay"].get<bool>())
             spc->play();
     };
-    mNodeSetters[NodeID::TriggerNode] = [&](SceneNode*, const ordered_json&) -> void
+    m_nodeSetters[NodeID::TriggerNode] = [&](SceneNode*, const ordered_json&) -> void
     {
     };
-    mNodeSetters[NodeID::SceneNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
+    m_nodeSetters[NodeID::SceneNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {
-        Log::Logger logger("Factory::SceneNodeSetter");
-        logger.info() << "Checking position";
+        m_logger.debug() << "SceneNodeSetter";
+        m_logger.debug() << "Checking position";
         if (recipe.contains("position"))
         {
-            logger.info() << "Setting position to " << recipe["position"][0].get<float>() << " " << recipe["position"][1].get<float>();
+            m_logger.debug() << "Setting position to " << recipe["position"][0].get<float>() << " " << recipe["position"][1].get<float>();
             node->setPosition(recipe["position"][0].get<float>(), recipe["position"][1].get<float>());
         }
 
-        logger.info() << "Checking scale";
+        m_logger.debug() << "Checking scale";
         if (recipe.contains("scale"))
             node->setScale(recipe["scale"][0].get<float>(), recipe["scale"][1].get<float>());
 
-        logger.info() << "Checking rotation";
+        m_logger.debug() << "Checking rotation";
         if (recipe.contains("rotation"))
             node->setRotation(recipe["rotation"].get<float>());
 
-        logger.info() << "Checking origin";
+        m_logger.debug() << "Checking origin";
         if (recipe.contains("origin"))
             node->setOrigin(recipe["origin"][0].get<float>(), recipe["origin"][1].get<float>());
 
-        logger.info() << "Checking debug";
+        m_logger.debug() << "Checking debug";
         if (recipe.contains("debug"))
             node->setDebugInfo(recipe["debug"].get<bool>());
 
-        logger.info() << "Checking script";
+        m_logger.debug() << "Checking mask";
+        if (recipe.contains("mask"))
+            node->setMask(recipe["mask"].get<SceneNode::Mask>());
+
+        m_logger.debug() << "Checking script";
         if (recipe.contains("script"))
             node->loadScriptFile(recipe["script"].get_ref<const std::string&>());
     };
@@ -248,13 +186,9 @@ NodeFactories::NodeFactories(TextureCollection& textures, FontCollection& fonts,
 
 SceneNode::UniPtr NodeFactories::createNode(const ordered_json& recipe) const
 {
-    Log::Logger logger("NodeFactories::createNode");
-    logger.info() << "Looking for constructor of type " << recipe["NodeType"];
-    auto factoryIt = mNodeConstructors.find(recipe["NodeType"].get<NodeID>());
-    assert(factoryIt != mNodeConstructors.end());
-
-    logger.info() << "Creating Node of type " << recipe["NodeType"];
-    SceneNode::UniPtr node = factoryIt->second(recipe);
+    m_logger.debug() << "Creating Node";
+    m_logger.debug() << "Looking for constructor of type " << recipe["NodeType"];
+    SceneNode::UniPtr node = nodeConstructor(recipe);
 
     // if it has children create them recursively and attach them
     if (recipe.contains("children") && recipe["children"].is_array())
@@ -264,7 +198,6 @@ SceneNode::UniPtr NodeFactories::createNode(const ordered_json& recipe) const
             node->attachChild(createNode(child));
         }
     }
-
     // not using std::move for local object preserves copy-elision
     return node;
 }

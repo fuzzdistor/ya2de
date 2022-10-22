@@ -3,10 +3,16 @@
 #include <algorithm>
 #include <triggernode.hpp>
 
+
+void f()
+{
+    std::cout << "hello inside callback!" << std::endl;
+}
+
 TriggerNode::TriggerNode()
     : SceneNode(SceneNode::Mask::Trigger)
     , m_shapenode(nullptr)
-    , m_callback()
+    , m_callback(nullptr)
 {
     m_callback = [&](SceneNode* otherNode)
     {
@@ -15,7 +21,6 @@ TriggerNode::TriggerNode()
         this->markForDestruction();
     };
 }
-
 
 sf::FloatRect TriggerNode::getBoundingRect() const
 {
@@ -39,5 +44,4 @@ void TriggerNode::applyCallbackTo(SceneNode* node)
     logger.info() << "Applying callback to colliding node";
     m_callback(node);
 }
-
 
