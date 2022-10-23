@@ -17,7 +17,7 @@ TriggerNode::TriggerNode()
     m_callback = [&](SceneNode* otherNode)
     {
         // simple test callback that rotates other node and then gets removed
-        otherNode->setRotation(180);
+        otherNode->getLuaState()->set("triggercallback", true);
         this->markForDestruction();
     };
 }

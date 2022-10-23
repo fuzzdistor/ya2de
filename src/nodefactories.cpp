@@ -1,3 +1,5 @@
+#include "LoggerCpp/LoggerCpp.h"
+#include "nlohmann/json.hpp"
 #include "resourceidentifiers.hpp"
 #include "resourcecollection.hpp"
 #include "scenenode.hpp"
@@ -8,11 +10,14 @@
 #include "tilemapnode.hpp"
 #include "triggernode.hpp"
 #include "ysortnode.hpp"
+#include "utils.hpp"
 #include <SFML/Audio/Sound.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <memory>
 #include <nodefactories.hpp>
 #include <stdexcept>
+#include <string_view>
+
 
 SceneNode::UniPtr NodeFactories::nodeConstructor(const ordered_json& recipe) const
 {
@@ -47,14 +52,15 @@ SceneNode::UniPtr NodeFactories::nodeConstructor(const ordered_json& recipe) con
             node = std::make_unique<TriggerNode>();
             break;
         case NodeID::SceneNode:
-            throw std::logic_error("SceneNode is not a valid node");
+            m_logger.error() << "SceneNode is not a valid node!";
+            throw std::logic_error("SceneNode is not a valid node!");
             break;
     }
 
     m_logger.debug() << "Configuring SceneNode";
     m_nodeSetters.at(NodeID::SceneNode)(node.get(), recipe);
 
-    m_logger.debug() << "Configuring DerivedNode";
+    m_logger.debug() << "Configuring " << recipe["NodeType"].get<std::string_view>();
     m_nodeSetters.at(id)(node.get(), recipe);
 
     return node;
@@ -70,38 +76,53 @@ NodeFactories::NodeFactories(TextureCollection& textures, FontCollection& fonts,
     {
         m_logger.debug() << "SpriteNodeSetter";
         auto recipeNode = static_cast<SpriteNode*>(node);
-        m_logger.debug() << "Checking textureid";
-        if(recipe.contains("textureid"))
-            recipeNode->setTexture(textures.get(recipe["textureid"].get<TextureID>()));
 
+        Checker chk(recipe);
+
+        if(chk.fieldType("textureid", json::value_t::string))
+            recipeNode->setTexture(textures.get(recipe["textureid"].get<TextureID>()));
     };
     m_nodeSetters[NodeID::TileMapNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {
         m_logger.debug() << "TileMapSetter";
-        auto tmn = static_cast<TileMapNode*>(node);
+        auto recipeNode = static_cast<TileMapNode*>(node);
 
+        Checker chk(recipe);
 
-        m_logger.debug() << "Checking datafilepath";
-        if(recipe.contains("datafilepath"))
-            tmn->setMapInfo(recipe["datafilepath"].get_ref<const std::string&>());
+        if(chk.fieldType("datafilepath", json::value_t::string))
+            recipeNode->setMapInfo(recipe["datafilepath"].get_ref<const std::string&>());
 
-        m_logger.debug() << "Checking tilesetid";
-        if(recipe.contains("tilesetid"))
-            tmn->setTileSet(tilesets.get(recipe["tilesetid"].get<TileSetID>()));
+        if(chk.fieldType("tilesetid", json::value_t::string))
+            recipeNode->setTileSet(tilesets.get(recipe["tilesetid"].get<TileSetID>()));
 
-        m_logger.debug() << "Checking tilescale";
-        if(recipe.contains("tilescale"))
-            tmn->setTileScale(recipe["tilescale"].get<float>());
+        if(chk.fieldType("tilescale", json::value_t::number_float))
+            recipeNode->setTileScale(recipe["tilescale"].get<float>());
 
-        m_logger.debug() << "Checking tilesize";
-        if(recipe.contains("tilesize"))
-            tmn->setTileSize(recipe["tilesize"].get<float>());
+        if(chk.fieldType("tilesize", json::value_t::number_float))
+            recipeNode->setTileSize(recipe["tilesize"].get<float>());
     };
-    m_nodeSetters[NodeID::ShapeNode] = [&](SceneNode*, const ordered_json&) -> void
+    m_nodeSetters[NodeID::ShapeNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {
+        m_logger.debug() << "ShapeNode";
+        auto recipeNode = static_cast<ShapeNode*>(node);
+
+        Checker chk(recipe);
+
+        if(chk.fieldType("size", json::value_t::array))
+            recipeNode->setSize(recipe["size"][0].get<float>(), recipe["size"][1].get<float>());
+
+        if(chk.fieldType("fillcolor", json::value_t::array))
+            recipeNode->setFillColor(sf::Color(recipe["fillcolor"][0], recipe["fillcolor"][1], recipe["fillcolor"][2], recipe["fillcolor"][3])); 
+
+        if(chk.fieldType("disable", json::value_t::boolean))
+            recipeNode->disable(recipe["disable"].get<bool>());
+
+        if(chk.fieldType("visible", json::value_t::boolean))
+            recipeNode->setVisible(recipe["visible"].get<bool>());
     };
     m_nodeSetters[NodeID::YSortNode] = [&](SceneNode*, const ordered_json&) -> void
     {
+        m_logger.debug() << "YSortNode";
     };
     m_nodeSetters[NodeID::TextNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {

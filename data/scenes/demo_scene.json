@@ -88,7 +88,12 @@
       {
         "NodeType": "ShapeNode",
         "shape": 0,
+        "position": [ 200, 0 ],
+        "fillcolor": [ 255, 128, 0, 255 ],
+        "size": [ 50, 50 ],
         "mask": "CollisionShape",
+        "disable": false,
+        "visible": true,
         "debug": true
       }
     ]
