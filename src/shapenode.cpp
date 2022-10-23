@@ -8,9 +8,6 @@ ShapeNode::ShapeNode()
     , m_shape()
     , m_shapeID(Shapes::Rectangle)
 {
-    m_shape.setFillColor(sf::Color(0xFFFFFFAA));
-    m_shape.setSize({700, 180});
-    setPosition({-350, 100});
 }
 
 
@@ -48,10 +45,11 @@ sf::FloatRect ShapeNode::getBoundingRect() const
 {
     if (m_disabled)
         return sf::FloatRect{};
-    auto rect = m_shape.getGlobalBounds();
-    rect.left += getPosition().x;
-    rect.top += getPosition().y;
-    return rect;
+
+    sf::FloatRect rect = m_shape.getLocalBounds();
+
+    return getWorldTransform().transformRect(rect);
+
 }
 
 void ShapeNode::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
