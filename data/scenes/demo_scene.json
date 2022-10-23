@@ -78,8 +78,8 @@
       -350,
       100
     ],
-    "charactersize": 20,
-    "outlinethickness": 2.0
+    "character_size": 20,
+    "outline_thickness": 2.0
   },
   {
     "NodeType": "TextNode",

@@ -1,3 +1,4 @@
+#include "LoggerCpp/Logger.h"
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -21,6 +22,9 @@ bool TileSet::loadFromFile(const std::string& path)
 {
     const json tileSetData = utils::jsonLoadFromFile(path);
 
+
+    Log::Logger logger("TilesetLoadFromFile");
+
     // TODO optimize strings
     std::string texturePath;
     // TileSetter keeps its tileset textures in the same path as the .txt with
@@ -28,10 +32,16 @@ bool TileSet::loadFromFile(const std::string& path)
     // apart in a separate path I want to encode the texture path in the json
     // with the texture key.
     if (tileSetData.contains("texture"))
+    {
         texturePath = tileSetData["texture"];
+        logger.critic() << tileSetData["texture"];
+    }
     else 
+    {
         // TODO rewrite in order to recognize and cut just the extension.
         texturePath = path.substr(0, path.size() - 4) + ".png";
+        logger.critic() << path.substr(0, path.size() - 4) + ".png";
+    }
 
     if(!m_texture.loadFromFile(texturePath))
         return false;

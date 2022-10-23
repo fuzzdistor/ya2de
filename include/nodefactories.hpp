@@ -1,11 +1,8 @@
 #ifndef TEST_NODEFACTORIES_HPP
 #define TEST_NODEFACTORIES_HPP
 
-#include "areaswitchnode.hpp"
 #include <nlohmann/json.hpp>
 #include <LoggerCpp/LoggerCpp.h>
-
-#include <resourceidentifiers.hpp>
 
 #include <map>
 #include <cassert>
@@ -15,6 +12,7 @@
 using ordered_json = nlohmann::ordered_json;
 
 class SceneNode;
+class ResourcePack;
 
 class NodeFactories
 {
@@ -36,7 +34,7 @@ public:
         Invalid = -1,
     };
 
-    NodeFactories(TextureCollection& textures, FontCollection& fonts, SoundBufferCollection& sounds, TileSetCollection& tilesets);
+    NodeFactories(const ResourcePack& resources);
     std::unique_ptr<SceneNode> createNode(const ordered_json& recipe) const;
 
 private:

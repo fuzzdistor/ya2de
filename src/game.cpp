@@ -18,13 +18,12 @@
 
 Game::Game()
     : m_clock()
-    , m_textures()
-    , m_fonts()
+    , m_resources()
     , m_sceneData("data/scenes.json")
-    , m_scene(std::make_unique<Scene>(m_window, m_fonts, m_textures, m_sceneData.getMainSceneDataPath()))
+    , m_scene(std::make_unique<Scene>(m_window, m_resources, m_sceneData.getMainSceneDataPath()))
 {
     Log::Logger logger("Game::Game");
-    d_statisticsText.setFont(m_fonts.get(FontID::Main));
+    d_statisticsText.setFont(m_resources.fonts.get(FontID::Main));
     d_statisticsText.setCharacterSize(8U);
     d_statisticsText.setPosition(10.f, 10.f);
     d_statisticsText.setFillColor(sf::Color::White);
@@ -87,7 +86,7 @@ void Game::update()
     processStatistics();
     m_scene->update(m_frametime);
     if (m_scene->requestsSceneChange())
-        m_scene = std::make_unique<Scene>(m_window, m_fonts, m_textures, m_sceneData.getSceneDataPath(m_scene->getRequestedScene()));
+        m_scene = std::make_unique<Scene>(m_window, m_resources, m_sceneData.getSceneDataPath(m_scene->getRequestedScene()));
 
 }
 

@@ -1,4 +1,5 @@
 #include "LoggerCpp/Log.h"
+#include "ResourcesHolder.hpp"
 #include "areaswitchnode.hpp"
 #include "nodefactories.hpp"
 #include "scenenode.hpp"
@@ -24,14 +25,11 @@
 #include <algorithm>
 #include <memory>
 
-Scene::Scene(sf::RenderTarget& outputTarget, FontCollection& fonts, TextureCollection& textures, const std::string& recipePath)
+Scene::Scene(sf::RenderTarget& outputTarget, ResourcePack& resources, const std::string& recipePath)
     : m_target(outputTarget)
     , m_sceneTexture()
     , m_worldView(outputTarget.getDefaultView())
-    , m_textures(textures) 
-    , m_fonts(fonts)
-    , m_sounds()
-    , m_text()
+    , m_resources(resources)
     , m_sceneGraph(SceneNode::Mask::none)
     , m_viewStartPosition()
 {
@@ -62,7 +60,6 @@ void Scene::draw()
 {
     m_target.setView(m_worldView);
     m_target.draw(m_sceneGraph);
-    m_target.draw(m_text);
 }
 
 bool Scene::requestsSceneChange() const
@@ -77,10 +74,10 @@ const std::string& Scene::getRequestedScene() const
 
 void Scene::loadResources()
 {
-    m_fonts.load(FontID::Main, "media/fonts/MesloLGS NF Regular.ttf");
-    m_textures.load(TextureID::Player, "media/textures/test.png");
-    m_tilesets.load(TileSetID::Room, "media/tilemaps/room/room.txt");
-    m_tilesets.load(TileSetID::Iso, "media/tilemaps/isomap/isomap.txt");
+    m_resources.fonts.load(FontID::Main, "media/fonts/MesloLGS NF Regular.ttf");
+    m_resources.textures.load(TextureID::Player, "media/textures/test.png");
+    m_resources.tilesets.load(TileSetID::Room, "media/tilemaps/room/room.txt");
+    m_resources.tilesets.load(TileSetID::Iso, "media/tilemaps/isomap/isomap.txt");
 }
 
 bool matchesMask(SceneNode::Pair& colliders, SceneNode::Mask mask1, SceneNode::Mask mask2)
@@ -143,7 +140,7 @@ void Scene::buildScene(const ordered_json& recipe)
 {
     m_logger.debug() << "buildScene";
 
-    NodeFactories nf(m_textures, m_fonts, m_sounds, m_tilesets);
+    NodeFactories nf(m_resources);
 
     sf::Clock timer;
 

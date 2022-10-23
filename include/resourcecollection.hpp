@@ -11,7 +11,7 @@
 
 
 template <typename Resource, typename Identifier>
-class ResourceCollection
+class GenericResourceCollection
 {
 public:
     void load(Identifier id, const std::string& filename);

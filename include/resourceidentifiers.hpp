@@ -40,6 +40,7 @@ X(MenuTheme,"MusicID::MenuTheme") \
 X(FoolishVilain,"MusicID::FoolishVilain") \
 
 #define TILESET_IDS \
+X(none,"TileSetID::none") \
 X(Room,"TileSetID::Room") \
 X(Iso,"TileSetID::Iso") \
 
@@ -137,12 +138,12 @@ NLOHMANN_JSON_SERIALIZE_ENUM(TileSetID,
 
 // Forward declaration and a few type definitions
 template <typename Resource, typename Identifier>
-class ResourceCollection;
+class GenericResourceCollection;
 
-typedef ResourceCollection<sf::Texture, TextureID>			    TextureCollection;
-typedef ResourceCollection<sf::Font, FontID>					FontCollection;
-typedef ResourceCollection<sf::Shader, ShaderID>				ShaderCollection;
-typedef ResourceCollection<sf::SoundBuffer, SoundEffectID>	    SoundBufferCollection;
-typedef ResourceCollection<TileSet, TileSetID>	                TileSetCollection;
+typedef GenericResourceCollection<sf::Texture, TextureID>			TextureCollection;
+typedef GenericResourceCollection<sf::Font, FontID>					FontCollection;
+typedef GenericResourceCollection<sf::Shader, ShaderID>				ShaderCollection;
+typedef GenericResourceCollection<sf::SoundBuffer, SoundEffectID>	SoundBufferCollection;
+typedef GenericResourceCollection<TileSet, TileSetID>	            TileSetCollection;
 
 #endif // TEST_RESOURCEIDENTIFIERS_HPP 

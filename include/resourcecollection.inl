@@ -13,12 +13,14 @@ const char* getTypeID(Identifier id)
         return soundeffect_names[static_cast<size_t>(id)];
     if (typeid(id) == typeid(ShaderID::none))
         return shader_names[static_cast<size_t>(id)];
+    if (typeid(id) == typeid(TileSetID::none))
+        return shader_names[static_cast<size_t>(id)];
 
     return "unknown type";
 }
 
 template<typename Resource, typename Identifier>
-void ResourceCollection<Resource, Identifier>::load(Identifier id, const std::string& filename)
+void GenericResourceCollection<Resource, Identifier>::load(Identifier id, const std::string& filename)
 {
     Log::Logger logger("ResColle::load"); 
     logger.info() << "Attempting to load " << getTypeID(id) << " from file \"" << filename << "\"...";
@@ -39,7 +41,7 @@ void ResourceCollection<Resource, Identifier>::load(Identifier id, const std::st
 
 template<typename Resource, typename Identifier>
 template<typename Parameter>
-void ResourceCollection<Resource, Identifier>::load(Identifier id, const std::string& filename, const Parameter& secondParam)
+void GenericResourceCollection<Resource, Identifier>::load(Identifier id, const std::string& filename, const Parameter& secondParam)
 {
     Log::Logger logger("ResColle::load"); 
     logger.info() << "Attempting to load " << getTypeID(id) << " from file \"" << filename << "\"...";
@@ -59,7 +61,7 @@ void ResourceCollection<Resource, Identifier>::load(Identifier id, const std::st
 }
 
 template<typename Resource, typename Identifier>
-Resource& ResourceCollection<Resource, Identifier>::get(Identifier id)
+Resource& GenericResourceCollection<Resource, Identifier>::get(Identifier id)
 {
     Log::Logger logger("ResColle::get");
     logger.info() << "Retrieving resource with ID \"" << getTypeID(id) << "\"";
@@ -70,7 +72,7 @@ Resource& ResourceCollection<Resource, Identifier>::get(Identifier id)
 }
 
 template<typename Resource, typename Identifier>
-const Resource& ResourceCollection<Resource, Identifier>::get(Identifier id) const
+const Resource& GenericResourceCollection<Resource, Identifier>::get(Identifier id) const
 {
     Log::Logger logger("ResColle::get const");
     logger.info() << "Retrieving resource with ID \"" << getTypeID(id) << "\"";
@@ -82,7 +84,7 @@ const Resource& ResourceCollection<Resource, Identifier>::get(Identifier id) con
 }
 
 template<typename Resource, typename Identifier>
-void ResourceCollection<Resource, Identifier>::insertResource(Identifier id, std::unique_ptr<Resource> resource)
+void GenericResourceCollection<Resource, Identifier>::insertResource(Identifier id, std::unique_ptr<Resource> resource)
 {
     auto inserted = m_resourceMap.insert(std::make_pair(id, std::move(resource)));
     assert(inserted.second);

@@ -8,6 +8,7 @@
 #include <SFML/Window/Event.hpp>
 #include <LoggerCpp/LoggerCpp.h>
 
+#include "resourcepack.hpp"
 #include "scenedata.hpp"
 #include <resourceidentifiers.hpp>
 #include <scene.hpp>
@@ -48,8 +49,7 @@ private:
     sf::RenderWindow m_window {{ 800, 600 }, "YA2DEngine", sf::Style::Resize | sf::Style::Close};
     sf::Time m_frametime {sf::Time::Zero};
     sf::Clock m_clock; 
-    TextureCollection m_textures;
-    FontCollection m_fonts;
+    ResourcePack m_resources;
     sf::Color m_clearColor {sf::Color::Black};
     Log::Logger m_logger {"Game"};
     SceneData m_sceneData;

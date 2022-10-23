@@ -1,26 +1,29 @@
-#include "LoggerCpp/LoggerCpp.h"
-#include "areaswitchnode.hpp"
-#include "nlohmann/json.hpp"
-#include "resourceidentifiers.hpp"
-#include "resourcecollection.hpp"
-#include "scenenode.hpp"
-#include "soundplayernode.hpp"
-#include "spritenode.hpp"
-#include "shapenode.hpp"
-#include "textnode.hpp"
-#include "tilemapnode.hpp"
-#include "triggernode.hpp"
-#include "ysortnode.hpp"
-#include "utils.hpp"
 #include <SFML/Audio/Sound.hpp>
 #include <SFML/Graphics/Texture.hpp>
-#include <memory>
+#include <LoggerCpp/LoggerCpp.h>
+#include <nlohmann/json.hpp>
+
+#include <resourcepack.hpp>
 #include <nodefactories.hpp>
+#include <resourceidentifiers.hpp>
+#include <resourcecollection.hpp>
+#include <utils.hpp>
+#include <areaswitchnode.hpp>
+#include <scenenode.hpp>
+#include <soundplayernode.hpp>
+#include <spritenode.hpp>
+#include <shapenode.hpp>
+#include <textnode.hpp>
+#include <tilemapnode.hpp>
+#include <triggernode.hpp>
+#include <ysortnode.hpp>
+
+#include <memory>
 #include <stdexcept>
 #include <string_view>
 
 
-NodeFactories::NodeFactories(TextureCollection& textures, FontCollection& fonts, SoundBufferCollection& sounds, TileSetCollection& tilesets)
+NodeFactories::NodeFactories(const ResourcePack& resources)
     : m_nodeSetters()
 {
     //////////////
@@ -34,7 +37,7 @@ NodeFactories::NodeFactories(TextureCollection& textures, FontCollection& fonts,
         Checker chk(recipe);
 
         if(chk.fieldType("textureid", json::value_t::string))
-            recipeNode->setTexture(textures.get(recipe["textureid"].get<TextureID>()));
+            recipeNode->setTexture(resources.textures.get(recipe["textureid"].get<TextureID>()));
     };
     m_nodeSetters[NodeID::TileMapNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {
@@ -43,17 +46,17 @@ NodeFactories::NodeFactories(TextureCollection& textures, FontCollection& fonts,
 
         Checker chk(recipe);
 
-        if(chk.fieldType("datafilepath", json::value_t::string))
-            recipeNode->setMapInfo(recipe["datafilepath"].get_ref<const std::string&>());
+        if(chk.fieldType("data_filepath", json::value_t::string))
+            recipeNode->setMapInfo(recipe["data_filepath"].get_ref<const std::string&>());
 
         if(chk.fieldType("tilesetid", json::value_t::string))
-            recipeNode->setTileSet(tilesets.get(recipe["tilesetid"].get<TileSetID>()));
+            recipeNode->setTileSet(resources.tilesets.get(recipe["tilesetid"].get<TileSetID>()));
 
-        if(chk.fieldType("tilescale", json::value_t::number_float))
-            recipeNode->setTileScale(recipe["tilescale"].get<float>());
+        if(chk.fieldType("tile_scale", json::value_t::number_float))
+            recipeNode->setTileScale(recipe["tile_scale"].get<float>());
 
-        if(chk.fieldType("tilesize", json::value_t::number_float))
-            recipeNode->setTileSize(recipe["tilesize"].get<float>());
+        if(chk.fieldType("tile_size", json::value_t::number_float))
+            recipeNode->setTileSize(recipe["tile_size"].get<float>());
     };
     m_nodeSetters[NodeID::ShapeNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {
@@ -65,8 +68,8 @@ NodeFactories::NodeFactories(TextureCollection& textures, FontCollection& fonts,
         if(chk.fieldType("size", json::value_t::array))
             recipeNode->setSize(recipe["size"][0].get<float>(), recipe["size"][1].get<float>());
 
-        if(chk.fieldType("fillcolor", json::value_t::array))
-            recipeNode->setFillColor(sf::Color(recipe["fillcolor"][0], recipe["fillcolor"][1], recipe["fillcolor"][2], recipe["fillcolor"][3])); 
+        if(chk.fieldType("fill_color", json::value_t::array))
+            recipeNode->setFillColor(sf::Color(recipe["fill_color"][0], recipe["fill_color"][1], recipe["fill_color"][2], recipe["fill_color"][3])); 
 
         if(chk.fieldType("disable", json::value_t::boolean))
             recipeNode->disable(recipe["disable"].get<bool>());
@@ -86,19 +89,19 @@ NodeFactories::NodeFactories(TextureCollection& textures, FontCollection& fonts,
         Checker chk(recipe);
 
         if(chk.fieldType("fontid", json::value_t::string))
-            recipeNode->setFont(fonts.get(recipe["fontid"].get<FontID>()));
+            recipeNode->setFont(resources.fonts.get(recipe["fontid"].get<FontID>()));
 
         if(chk.fieldType("characte_rsize", json::value_t::number_unsigned))
             recipeNode->setCharacterSize(recipe["character_size"].get<unsigned int>());
 
-        if(chk.fieldType("outlinethickness", json::value_t::number_float))
-            recipeNode->setOutlineThickness(recipe["outlinethickness"].get<float>());
+        if(chk.fieldType("outline_thickness", json::value_t::number_float))
+            recipeNode->setOutlineThickness(recipe["outline_thickness"].get<float>());
 
-        if(chk.fieldType("fillcolor", json::value_t::array))
-            recipeNode->setFillColor(sf::Color(recipe["fillcolor"][0], recipe["fillcolor"][1], recipe["fillcolor"][2], recipe["fillcolor"][3])); 
+        if(chk.fieldType("fill_color", json::value_t::array))
+            recipeNode->setFillColor(sf::Color(recipe["fill_color"][0], recipe["fill_color"][1], recipe["fill_color"][2], recipe["fill_color"][3])); 
 
-        if(chk.fieldType("outlinecolor", json::value_t::number_unsigned))
-            recipeNode->setOutlineColor(sf::Color(recipe["outlinecolor"].get<unsigned int>()));
+        if(chk.fieldType("outline_color", json::value_t::number_unsigned))
+            recipeNode->setOutlineColor(sf::Color(recipe["outline_color"].get<unsigned int>()));
     };
     m_nodeSetters[NodeID::SoundPlayerNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {

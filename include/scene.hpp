@@ -2,6 +2,7 @@
 #define TEST_SCENE_HPP
 
 #include "LoggerCpp/Logger.h"
+#include "resourcepack.hpp"
 #include "nodefactories.hpp"
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
@@ -18,7 +19,7 @@
 class Scene : private sf::NonCopyable
 {
 public:
-    Scene(sf::RenderTarget& outputTarget, FontCollection& fonts, TextureCollection& textures, const std::string& recipePath);
+    Scene(sf::RenderTarget& outputTarget, ResourcePack& resources, const std::string& recipePath);
     void update(sf::Time dt);
     void draw();
 
@@ -40,11 +41,7 @@ private:
     sf::RenderTarget& m_target;
     sf::RenderTexture m_sceneTexture;
     sf::View m_worldView;
-    TextureCollection& m_textures;
-    FontCollection& m_fonts;
-    SoundBufferCollection m_sounds;
-    TileSetCollection m_tilesets;
-    sf::Text m_text;
+    ResourcePack& m_resources;
     std::string m_toArea{};
     //SoundPlayer& m_sounds;
 
