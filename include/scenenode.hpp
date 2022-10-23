@@ -35,7 +35,7 @@ public:
         CollisionObject = 1 << 1,   //2
         NonPlayable     = 1 << 2,   //4
         Enemy           = 1 << 3,   //8
-        AreaSwitcher    = 1 << 4,   //16
+        AreaSwitch      = 1 << 4,   //16
         Background      = 1 << 5,   //32
         Trigger         = 1 << 6,   //64
         CollisionShape  = 1 << 7,   //128
@@ -100,7 +100,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(SceneNode::Mask, {
     { SceneNode::Mask::CollisionObject, "CollisionObject" }, 
     { SceneNode::Mask::NonPlayable, "NonPlayable" }, 
     { SceneNode::Mask::Enemy, "Enemy" }, 
-    { SceneNode::Mask::AreaSwitcher, "AreaSwitcher" }, 
+    { SceneNode::Mask::AreaSwitch, "AreaSwitch" }, 
     { SceneNode::Mask::Background, "Background" }, 
     { SceneNode::Mask::Trigger, "Trigger" }, 
     { SceneNode::Mask::CollisionShape, "CollisionShape" }, 

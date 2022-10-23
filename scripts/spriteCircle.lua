@@ -2,19 +2,30 @@ local flux = require("scripts.lib.flux")
 
 local my = {}
 
-my.position = Vector2f:new(100,0)
+my.position = this:getPosition()
 my.scale = Vector2f:new(5,5)
 
+local circleCoordsX = {
+    this:getPosition().x - 200 * this:getScale().x,
+    this:getPosition().x,
+}
+
+local circleCoordsY = {
+    this:getPosition().y + 100 * this:getScale().y,
+    this:getPosition().y - 100 * this:getScale().y,
+    this:getPosition().y,
+}
+
 local function circleMotion()
-    flux.to(my.position, 1, {y=100})
+    flux.to(my.position, 1, {y=circleCoordsY[1]})
         :ease("sineout")
-        :after(2, {y=-100})
+        :after(2, {y=circleCoordsY[2]})
         :ease("sineinout")
-        :after(1, {y=0})
+        :after(1, {y=circleCoordsY[3]})
         :ease("sinein")
-    flux.to(my.position, 2, {x=-100})
+    flux.to(my.position, 2, {x=circleCoordsX[1]})
         :ease("sineinout")
-        :after(2, {x=100})
+        :after(2, {x=circleCoordsX[2]})
         :ease("sineinout")
         :oncomplete(circleMotion)
 end

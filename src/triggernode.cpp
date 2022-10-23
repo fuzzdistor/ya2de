@@ -4,11 +4,6 @@
 #include <triggernode.hpp>
 
 
-void f()
-{
-    std::cout << "hello inside callback!" << std::endl;
-}
-
 TriggerNode::TriggerNode()
     : SceneNode(SceneNode::Mask::Trigger)
     , m_shapenode(nullptr)

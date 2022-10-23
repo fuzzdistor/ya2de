@@ -20,6 +20,7 @@ add_subdirectory("${CMAKE_SOURCE_DIR}/extlibs/Sol2")
 add_subdirectory("${CMAKE_SOURCE_DIR}/extlibs/nlohmann-json")
 
 add_executable("${CMAKE_PROJECT_NAME}"
+ src/areaswitchnode.cpp
  src/main.cpp
  src/game.cpp
  src/nodefactories.cpp
@@ -34,6 +35,7 @@ add_executable("${CMAKE_PROJECT_NAME}"
  src/tileset.cpp
  src/triggernode.cpp
  src/ysortnode.cpp
+ include/areaswitchnode.hpp
  include/init.hpp
  include/input.hpp
  include/game.hpp

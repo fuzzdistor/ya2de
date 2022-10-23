@@ -8,10 +8,12 @@
 #include <game.hpp>
 
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 #include <cassert>
 #include <cmath>
 #include <string>
+#include <string_view>
 
 
 Game::Game()
@@ -19,7 +21,7 @@ Game::Game()
     , m_textures()
     , m_fonts()
     , m_sceneData("data/scenes.json")
-    , m_scene(m_window, m_fonts, m_textures, m_sceneData.getMainSceneDataPath())
+    , m_scene(std::make_unique<Scene>(m_window, m_fonts, m_textures, m_sceneData.getMainSceneDataPath()))
 {
     Log::Logger logger("Game::Game");
     d_statisticsText.setFont(m_fonts.get(FontID::Main));
@@ -83,13 +85,16 @@ void Game::update()
 {
     m_frametime = m_clock.restart();
     processStatistics();
-    m_scene.update(m_frametime);
+    m_scene->update(m_frametime);
+    if (m_scene->requestsSceneChange())
+        m_scene = std::make_unique<Scene>(m_window, m_fonts, m_textures, m_sceneData.getSceneDataPath(m_scene->getRequestedScene()));
+
 }
 
 void Game::render()
 {
     m_window.clear();
-    m_scene.draw();
+    m_scene->draw();
     m_window.setView(m_window.getDefaultView());
     m_window.draw(d_statisticsText);
     m_window.display();

@@ -1,7 +1,6 @@
 #ifndef TEST_MAIN_HPP
 #define TEST_MAIN_HPP
 
-#include "scenedata.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Time.hpp>
@@ -9,6 +8,7 @@
 #include <SFML/Window/Event.hpp>
 #include <LoggerCpp/LoggerCpp.h>
 
+#include "scenedata.hpp"
 #include <resourceidentifiers.hpp>
 #include <scene.hpp>
 
@@ -53,7 +53,7 @@ private:
     sf::Color m_clearColor {sf::Color::Black};
     Log::Logger m_logger {"Game"};
     SceneData m_sceneData;
-    Scene m_scene;
+    std::unique_ptr<Scene> m_scene;
     sf::Thread m_captureThread {&Game::saveCapture, this};
     sf::Text d_statisticsText;
     unsigned int d_statisticsFPS {0};

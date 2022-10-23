@@ -1,9 +1,11 @@
 #include "LoggerCpp/Log.h"
+#include "areaswitchnode.hpp"
 #include "nodefactories.hpp"
 #include "scenenode.hpp"
 #include "triggernode.hpp"
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/System/Clock.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <LoggerCpp/LoggerCpp.h>
 #include <cassert>
@@ -63,9 +65,14 @@ void Scene::draw()
     m_target.draw(m_text);
 }
 
-bool Scene::hasReachedWinCondition() const
+bool Scene::requestsSceneChange() const
 {
-    return false;
+    return !m_toArea.empty();
+}
+
+const std::string& Scene::getRequestedScene() const
+{
+    return m_toArea;
 }
 
 void Scene::loadResources()
@@ -80,27 +87,27 @@ bool matchesMask(SceneNode::Pair& colliders, SceneNode::Mask mask1, SceneNode::M
 {
     Log::Logger logger("matchesMask");
 
-    /* auto nodeMask1 = static_cast<unsigned int>(colliders.first->getMask()); */
-    /* auto nodeMask2 = static_cast<unsigned int>(colliders.second->getMask()); */
+    auto nodeMask1 = static_cast<unsigned int>(colliders.first->getMask());
+    auto nodeMask2 = static_cast<unsigned int>(colliders.second->getMask());
 
-    /* auto checkMask1 = static_cast<unsigned int>(mask1); */
-    /* auto checkMask2 = static_cast<unsigned int>(mask2); */
+    auto checkMask1 = static_cast<unsigned int>(mask1);
+    auto checkMask2 = static_cast<unsigned int>(mask2);
 
-    auto nodeMask1 = colliders.first->getMask();
-    auto nodeMask2 = colliders.second->getMask();
+    /* auto nodeMask1 = colliders.first->getMask(); */
+    /* auto nodeMask2 = colliders.second->getMask(); */
 
-    auto checkMask1 = mask1;
-    auto checkMask2 = mask2;
+    /* auto checkMask1 = mask1; */
+    /* auto checkMask2 = mask2; */
 
 
     // Make sure first pair entry has category type1 and second has type2
-    if (checkMask1 == nodeMask1 && checkMask2 == nodeMask2)
+    if (checkMask1 & nodeMask1 && checkMask2 & nodeMask2)
     {
         logger.info() << "mask hit!";
         return true;
     }
 
-    if (checkMask1 == nodeMask2 && checkMask2 == nodeMask1)
+    if (checkMask1 & nodeMask2 && checkMask2 & nodeMask1)
     {
         logger.info() << "mask hit!";
         std::swap(colliders.first, colliders.second);
@@ -123,6 +130,12 @@ void Scene::handleCollisions()
             auto trigger = static_cast<TriggerNode*>(pair.second);
             trigger->applyCallbackTo(player);
         }
+        if (matchesMask(pair, SceneNode::Mask::Player, SceneNode::Mask::AreaSwitch))
+        {
+            auto areaswitchernode = static_cast<AreaSwitchNode*>(pair.second);
+            m_toArea = areaswitchernode->getDestinyArea();
+        }
+        
     }
 }
 
@@ -132,7 +145,10 @@ void Scene::buildScene(const ordered_json& recipe)
 
     NodeFactories nf(m_textures, m_fonts, m_sounds, m_tilesets);
 
+    sf::Clock timer;
+
     m_logger.info() << "Building scene start";
+    timer.restart();
 
     for (auto& nodeRecipe : recipe)
     {
@@ -140,7 +156,8 @@ void Scene::buildScene(const ordered_json& recipe)
         m_sceneGraph.attachChild(nf.createNode(nodeRecipe));
     }
 
-    m_logger.info() << "Finished building scene!";
+    m_logger.info() << "Finished building scene in " << timer.restart().asMicroseconds() << "us";
+
 }
 
 sf::FloatRect Scene::getViewBounds() const

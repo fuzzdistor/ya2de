@@ -26,8 +26,8 @@ public:
     //CommandQueue& getCommandQueue();
     void setCurrentBattleFieldPosition(float lineY);
     void setWorldHeight(float height);
-
-    bool hasReachedWinCondition() const;
+    bool requestsSceneChange() const;
+    const std::string& getRequestedScene() const;
 
 private:
     void loadResources();
@@ -45,6 +45,7 @@ private:
     SoundBufferCollection m_sounds;
     TileSetCollection m_tilesets;
     sf::Text m_text;
+    std::string m_toArea{};
     //SoundPlayer& m_sounds;
 
     SceneNode m_sceneGraph;

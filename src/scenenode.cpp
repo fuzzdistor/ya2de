@@ -83,25 +83,25 @@ SceneNode::SceneNode(SceneNode::Mask mask)
     vector2f.set_function("normalize", &normalize);
 
     // Setting API for Transformable object
-    m_script->set("this", static_cast<sf::Transformable*>(this));
-    m_script->new_usertype<sf::Transformable>("Transformable"
+    m_script->set("this", this);
+    m_script->new_usertype<SceneNode>("SceneNode"
             , "move"
-            , static_cast<void(sf::Transformable::*)(float, float)>(&sf::Transformable::move)
+            , static_cast<void(SceneNode::*)(float, float)>(&SceneNode::move)
             , "setPosition"
             , sol::overload(
-                static_cast<void(sf::Transformable::*)(sf::Vector2f const&)>(&sf::Transformable::setPosition)
-                , static_cast<void(sf::Transformable::*)(float, float)>(&sf::Transformable::setPosition)
+                static_cast<void(SceneNode::*)(sf::Vector2f const&)>(&SceneNode::setPosition)
+                , static_cast<void(SceneNode::*)(float, float)>(&SceneNode::setPosition)
                 )
             , "setScale"
-            , static_cast<void(sf::Transformable::*)(float, float)>(&sf::Transformable::setScale)
+            , static_cast<void(SceneNode::*)(float, float)>(&SceneNode::setScale)
             , "setRotation"
-            , &sf::Transformable::setRotation
+            , &SceneNode::setRotation
             , "getRotation"
-            , &sf::Transformable::getRotation
+            , &SceneNode::getRotation
             , "getScale"
-            , &sf::Transformable::getScale
+            , &SceneNode::getScale
             , "getPosition"
-            , &sf::Transformable::getPosition
+            , &SceneNode::getPosition
             );
 }
 

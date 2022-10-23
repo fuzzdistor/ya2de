@@ -1,8 +1,12 @@
 {
   "data" :[
     {
-      "scenename" : "demo scene",
-      "datapath" : "data/scenes/demo_scene.json",
+      "scenename" : "demo_scene",
+      "datapath" : "data/scenes/demo_scene.json"
+    },
+    {
+      "scenename" : "demo_area2",
+      "datapath" : "data/scenes/demo_area2.json",
       "ismainscene" : true
     }
   ]

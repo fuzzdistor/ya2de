@@ -1,6 +1,7 @@
 #ifndef TEST_NODEFACTORIES_HPP
 #define TEST_NODEFACTORIES_HPP
 
+#include "areaswitchnode.hpp"
 #include <nlohmann/json.hpp>
 #include <LoggerCpp/LoggerCpp.h>
 
@@ -31,6 +32,8 @@ public:
         TextNode,
         SoundPlayerNode,
         TriggerNode,
+        AreaSwitchNode,
+        Invalid = -1,
     };
 
     NodeFactories(TextureCollection& textures, FontCollection& fonts, SoundBufferCollection& sounds, TileSetCollection& tilesets);
@@ -45,6 +48,7 @@ private:
 
 // nlohmann json specializations for NodeID enum
 NLOHMANN_JSON_SERIALIZE_ENUM(NodeFactories::NodeID, {
+    { NodeFactories::NodeID::Invalid, "" },
     { NodeFactories::NodeID::SceneNode, "SceneNode" },
     { NodeFactories::NodeID::SpriteNode, "SpriteNode" },
     { NodeFactories::NodeID::TileMapNode, "TileMapNode" },
@@ -53,6 +57,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(NodeFactories::NodeID, {
     { NodeFactories::NodeID::TextNode, "TextNode" },
     { NodeFactories::NodeID::SoundPlayerNode, "SoundPlayerNode" },
     { NodeFactories::NodeID::TriggerNode, "TriggerNode" },
+    { NodeFactories::NodeID::AreaSwitchNode, "AreaSwitchNode" },
 })
 
 #endif // TEST_NODEFACTORIES_HPP

@@ -1,4 +1,5 @@
 #include "LoggerCpp/LoggerCpp.h"
+#include "areaswitchnode.hpp"
 #include "nlohmann/json.hpp"
 #include "resourceidentifiers.hpp"
 #include "resourcecollection.hpp"
@@ -51,9 +52,16 @@ SceneNode::UniPtr NodeFactories::nodeConstructor(const ordered_json& recipe) con
         case NodeID::TriggerNode:
             node = std::make_unique<TriggerNode>();
             break;
+        case NodeID::AreaSwitchNode:
+            node = std::make_unique<AreaSwitchNode>();
+            break;
         case NodeID::SceneNode:
             m_logger.error() << "SceneNode is not a valid node!";
             throw std::logic_error("SceneNode is not a valid node!");
+            break;
+        case NodeID::Invalid:
+            m_logger.error() << "Invalid node name passed!";
+            throw std::logic_error("Node id is not a valid node!");
             break;
     }
 
@@ -74,7 +82,7 @@ NodeFactories::NodeFactories(TextureCollection& textures, FontCollection& fonts,
     //////////////
     m_nodeSetters[NodeID::SpriteNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {
-        m_logger.debug() << "SpriteNodeSetter";
+        m_logger.debug() << "SpriteNode Settings";
         auto recipeNode = static_cast<SpriteNode*>(node);
 
         Checker chk(recipe);
@@ -84,7 +92,7 @@ NodeFactories::NodeFactories(TextureCollection& textures, FontCollection& fonts,
     };
     m_nodeSetters[NodeID::TileMapNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {
-        m_logger.debug() << "TileMapSetter";
+        m_logger.debug() << "TileMapNode Settings";
         auto recipeNode = static_cast<TileMapNode*>(node);
 
         Checker chk(recipe);
@@ -103,7 +111,7 @@ NodeFactories::NodeFactories(TextureCollection& textures, FontCollection& fonts,
     };
     m_nodeSetters[NodeID::ShapeNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {
-        m_logger.debug() << "ShapeNode";
+        m_logger.debug() << "ShapeNode Settings";
         auto recipeNode = static_cast<ShapeNode*>(node);
 
         Checker chk(recipe);
@@ -126,81 +134,84 @@ NodeFactories::NodeFactories(TextureCollection& textures, FontCollection& fonts,
     };
     m_nodeSetters[NodeID::TextNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {
-        m_logger.debug() << "TextNodeSetter";
-        auto tmn = static_cast<TextNode*>(node);
+        m_logger.debug() << "TextNode Settings";
+        auto recipeNode = static_cast<TextNode*>(node);
 
-        m_logger.debug() << "Checking fontid";
-        if(recipe.contains("fontid"))
-            tmn->setFont(fonts.get(recipe["fontid"].get<FontID>()));
+        Checker chk(recipe);
 
-        m_logger.debug() << "Checking charactersize";
-        if(recipe.contains("charactersize"))
-            tmn->setCharacterSize(recipe["charactersize"].get<unsigned int>());
+        if(chk.fieldType("fontid", json::value_t::string))
+            recipeNode->setFont(fonts.get(recipe["fontid"].get<FontID>()));
 
-        m_logger.debug() << "Checking outlinethickness";
-        if(recipe.contains("outlinethickness"))
-            tmn->setOutlineThickness(recipe["outlinethickness"].get<float>());
+        if(chk.fieldType("charactersize", json::value_t::number_unsigned))
+            recipeNode->setCharacterSize(recipe["charactersize"].get<unsigned int>());
 
-        m_logger.debug() << "Checking fillcolor";
-        if(recipe.contains("fillcolor"))
-            tmn->setFillColor(sf::Color(recipe["fillcolor"].get<unsigned int>()));
+        if(chk.fieldType("outlinethickness", json::value_t::number_float))
+            recipeNode->setOutlineThickness(recipe["outlinethickness"].get<float>());
 
-        m_logger.debug() << "Checking outlinecolor";
-        if(recipe.contains("outlinecolor"))
-            tmn->setOutlineColor(sf::Color(recipe["outlinecolor"].get<unsigned int>()));
+        if(chk.fieldType("fillcolor", json::value_t::array))
+            recipeNode->setFillColor(sf::Color(recipe["fillcolor"][0], recipe["fillcolor"][1], recipe["fillcolor"][2], recipe["fillcolor"][3])); 
+
+        if(chk.fieldType("outlinecolor", json::value_t::number_unsigned))
+            recipeNode->setOutlineColor(sf::Color(recipe["outlinecolor"].get<unsigned int>()));
     };
     m_nodeSetters[NodeID::SoundPlayerNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {
-        m_logger.debug() << "SoundPlayerSetter";
-        auto spc = static_cast<SoundPlayerNode*>(node);
+        m_logger.debug() << "SoundPlayer Settings";
+        auto recipeNode = static_cast<SoundPlayerNode*>(node);
 
-        m_logger.debug() << "Checking filepath";
-        if (recipe.contains("filepath"))
-            spc->setSoundSource(recipe["filepath"].get_ref<const std::string&>());
+        Checker chk(recipe);
 
-        m_logger.debug() << "Checking loop";
-        if (recipe.contains("loop"))
-            spc->setLoop(recipe["loop"].get<bool>());
+        if (chk.fieldType("filepath", json::value_t::string))
+            recipeNode->setSoundSource(recipe["filepath"].get_ref<const std::string&>());
 
-        m_logger.debug() << "Checking autoplay";
-        if (recipe.contains("autoplay") && recipe["autoplay"].get<bool>())
-            spc->play();
+        if (chk.fieldType("loop", json::value_t::boolean))
+            recipeNode->setLoop(recipe["loop"].get<bool>());
+
+        if (chk.fieldType("autoplay", json::value_t::boolean) && recipe["autoplay"].get<bool>())
+            recipeNode->play();
+    };
+    m_nodeSetters[NodeID::AreaSwitchNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
+    {
+        m_logger.debug() << "AreaSwitchNode Settings";
+        auto recipeNode = static_cast<AreaSwitchNode*>(node);
+
+        Checker chk(recipe);
+
+        if (chk.fieldType("destiny", json::value_t::string))
+        {
+            recipeNode->setDestinyArea(recipe["destiny"].get_ref<const std::string&>());
+        }
     };
     m_nodeSetters[NodeID::TriggerNode] = [&](SceneNode*, const ordered_json&) -> void
     {
     };
     m_nodeSetters[NodeID::SceneNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {
-        m_logger.debug() << "SceneNodeSetter";
-        m_logger.debug() << "Checking position";
-        if (recipe.contains("position"))
+        m_logger.debug() << "SceneNode Settings";
+
+        Checker chk(recipe);
+
+        if (chk.fieldType("position", json::value_t::array))
         {
-            m_logger.debug() << "Setting position to " << recipe["position"][0].get<float>() << " " << recipe["position"][1].get<float>();
             node->setPosition(recipe["position"][0].get<float>(), recipe["position"][1].get<float>());
         }
 
-        m_logger.debug() << "Checking scale";
-        if (recipe.contains("scale"))
+        if (chk.fieldType("scale", json::value_t::array))
             node->setScale(recipe["scale"][0].get<float>(), recipe["scale"][1].get<float>());
 
-        m_logger.debug() << "Checking rotation";
-        if (recipe.contains("rotation"))
+        if (chk.fieldType("rotation", json::value_t::number_float))
             node->setRotation(recipe["rotation"].get<float>());
 
-        m_logger.debug() << "Checking origin";
-        if (recipe.contains("origin"))
+        if (chk.fieldType("origin", json::value_t::array))
             node->setOrigin(recipe["origin"][0].get<float>(), recipe["origin"][1].get<float>());
 
-        m_logger.debug() << "Checking debug";
-        if (recipe.contains("debug"))
+        if (chk.fieldType("debug", json::value_t::boolean))
             node->setDebugInfo(recipe["debug"].get<bool>());
 
-        m_logger.debug() << "Checking mask";
-        if (recipe.contains("mask"))
+        if (chk.fieldType("mask", json::value_t::string))
             node->setMask(recipe["mask"].get<SceneNode::Mask>());
 
-        m_logger.debug() << "Checking script";
-        if (recipe.contains("script"))
+        if (chk.fieldType("script", json::value_t::string))
             node->loadScriptFile(recipe["script"].get_ref<const std::string&>());
     };
 }
