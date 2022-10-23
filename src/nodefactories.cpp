@@ -20,60 +20,6 @@
 #include <string_view>
 
 
-SceneNode::UniPtr NodeFactories::nodeConstructor(const ordered_json& recipe) const
-{
-    NodeID id = recipe["NodeType"];
-
-    m_logger.debug() << "NodeConstructor";
-
-    m_logger.debug() << "Creating Node";
-
-    SceneNode::UniPtr node;
-    switch (id)
-    {
-        case NodeID::SpriteNode:
-            node = std::make_unique<SpriteNode>();
-            break;
-        case NodeID::TileMapNode:
-            node = std::make_unique<TileMapNode>();
-            break;
-        case NodeID::ShapeNode:
-            node = std::make_unique<ShapeNode>();
-            break;
-        case NodeID::YSortNode:
-            node = std::make_unique<YSortNode>();
-            break;
-        case NodeID::TextNode:
-            node = std::make_unique<TextNode>();
-            break;
-        case NodeID::SoundPlayerNode:
-            node = std::make_unique<SoundPlayerNode>();
-            break;
-        case NodeID::TriggerNode:
-            node = std::make_unique<TriggerNode>();
-            break;
-        case NodeID::AreaSwitchNode:
-            node = std::make_unique<AreaSwitchNode>();
-            break;
-        case NodeID::SceneNode:
-            m_logger.error() << "SceneNode is not a valid node!";
-            throw std::logic_error("SceneNode is not a valid node!");
-            break;
-        case NodeID::Invalid:
-            m_logger.error() << "Invalid node name passed!";
-            throw std::logic_error("Node id is not a valid node!");
-            break;
-    }
-
-    m_logger.debug() << "Configuring SceneNode";
-    m_nodeSetters.at(NodeID::SceneNode)(node.get(), recipe);
-
-    m_logger.debug() << "Configuring " << recipe["NodeType"].get<std::string_view>();
-    m_nodeSetters.at(id)(node.get(), recipe);
-
-    return node;
-}
-
 NodeFactories::NodeFactories(TextureCollection& textures, FontCollection& fonts, SoundBufferCollection& sounds, TileSetCollection& tilesets)
     : m_nodeSetters()
 {
@@ -130,7 +76,7 @@ NodeFactories::NodeFactories(TextureCollection& textures, FontCollection& fonts,
     };
     m_nodeSetters[NodeID::YSortNode] = [&](SceneNode*, const ordered_json&) -> void
     {
-        m_logger.debug() << "YSortNode";
+        m_logger.debug() << "YSortNode Settings";
     };
     m_nodeSetters[NodeID::TextNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {
@@ -142,8 +88,8 @@ NodeFactories::NodeFactories(TextureCollection& textures, FontCollection& fonts,
         if(chk.fieldType("fontid", json::value_t::string))
             recipeNode->setFont(fonts.get(recipe["fontid"].get<FontID>()));
 
-        if(chk.fieldType("charactersize", json::value_t::number_unsigned))
-            recipeNode->setCharacterSize(recipe["charactersize"].get<unsigned int>());
+        if(chk.fieldType("characte_rsize", json::value_t::number_unsigned))
+            recipeNode->setCharacterSize(recipe["character_size"].get<unsigned int>());
 
         if(chk.fieldType("outlinethickness", json::value_t::number_float))
             recipeNode->setOutlineThickness(recipe["outlinethickness"].get<float>());
@@ -178,9 +124,7 @@ NodeFactories::NodeFactories(TextureCollection& textures, FontCollection& fonts,
         Checker chk(recipe);
 
         if (chk.fieldType("destiny", json::value_t::string))
-        {
             recipeNode->setDestinyArea(recipe["destiny"].get_ref<const std::string&>());
-        }
     };
     m_nodeSetters[NodeID::TriggerNode] = [&](SceneNode*, const ordered_json&) -> void
     {
@@ -192,9 +136,7 @@ NodeFactories::NodeFactories(TextureCollection& textures, FontCollection& fonts,
         Checker chk(recipe);
 
         if (chk.fieldType("position", json::value_t::array))
-        {
             node->setPosition(recipe["position"][0].get<float>(), recipe["position"][1].get<float>());
-        }
 
         if (chk.fieldType("scale", json::value_t::array))
             node->setScale(recipe["scale"][0].get<float>(), recipe["scale"][1].get<float>());
@@ -233,3 +175,58 @@ SceneNode::UniPtr NodeFactories::createNode(const ordered_json& recipe) const
     // not using std::move for local object preserves copy-elision
     return node;
 }
+
+SceneNode::UniPtr NodeFactories::nodeConstructor(const ordered_json& recipe) const
+{
+    NodeID id = recipe["NodeType"];
+
+    m_logger.debug() << "NodeConstructor";
+
+    m_logger.debug() << "Creating Node";
+
+    SceneNode::UniPtr node;
+    switch (id)
+    {
+        case NodeID::SpriteNode:
+            node = std::make_unique<SpriteNode>();
+            break;
+        case NodeID::TileMapNode:
+            node = std::make_unique<TileMapNode>();
+            break;
+        case NodeID::ShapeNode:
+            node = std::make_unique<ShapeNode>();
+            break;
+        case NodeID::YSortNode:
+            node = std::make_unique<YSortNode>();
+            break;
+        case NodeID::TextNode:
+            node = std::make_unique<TextNode>();
+            break;
+        case NodeID::SoundPlayerNode:
+            node = std::make_unique<SoundPlayerNode>();
+            break;
+        case NodeID::TriggerNode:
+            node = std::make_unique<TriggerNode>();
+            break;
+        case NodeID::AreaSwitchNode:
+            node = std::make_unique<AreaSwitchNode>();
+            break;
+        case NodeID::SceneNode:
+            m_logger.error() << "SceneNode is not a valid node!";
+            throw std::logic_error("SceneNode is not a valid node!");
+            break;
+        case NodeID::Invalid:
+            m_logger.error() << "Invalid node name passed!";
+            throw std::logic_error("Node id is not a valid node!");
+            break;
+    }
+
+    m_logger.debug() << "Configuring SceneNode";
+    m_nodeSetters.at(NodeID::SceneNode)(node.get(), recipe);
+
+    m_logger.debug() << "Configuring " << recipe["NodeType"].get<std::string_view>();
+    m_nodeSetters.at(id)(node.get(), recipe);
+
+    return node;
+}
+

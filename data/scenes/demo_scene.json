@@ -1,7 +1,7 @@
 [
   {
     "NodeType": "TileMapNode",
-    "datafilepath": "media/tilemaps/room/room.txt",
+    "data_filepath": "media/tilemaps/room/room.txt",
     "tilesetid": "Room",
     "position": [
       -180,
@@ -14,7 +14,7 @@
   },
   {
     "NodeType": "TileMapNode",
-    "datafilepath": "media/tilemaps/isomap/isomap.txt",
+    "data_filepath": "media/tilemaps/isomap/isomap.txt",
     "tilesetid": "Iso",
     "position": [
       -100,
@@ -30,7 +30,7 @@
   },
   {
     "NodeType": "ShapeNode",
-    "fillcolor": [255, 255, 255, 128],
+    "fill_color": [255, 255, 255, 128],
     "size": [700.0, 180.0],
     "position": [-350.0, 100.0],
     "shape": 0,
@@ -94,7 +94,7 @@
       {
         "NodeType": "ShapeNode",
         "shape": 0,
-        "fillcolor": [ 0, 255, 0, 128 ],
+        "fill_color": [ 0, 255, 0, 128 ],
         "size": [ 50, 50 ],
         "mask": "CollisionShape",
         "disable": false,
@@ -110,7 +110,7 @@
       {
         "NodeType": "ShapeNode",
         "shape": 0,
-        "fillcolor": [ 255, 128, 0, 128 ],
+        "fill_color": [ 255, 128, 0, 128 ],
         "size": [ 50, 50 ],
         "mask": "CollisionShape",
         "disable": false,
