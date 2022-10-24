@@ -32,6 +32,10 @@ sf::Keyboard::Key getKeyBind(const std::string_view action)
         return sf::Keyboard::A;
     if (action == "move_right")
         return sf::Keyboard::D;
+    if (action == "action_a")
+        return sf::Keyboard::J;
+    if (action == "action_b")
+        return sf::Keyboard::K;
     return sf::Keyboard::KeyCount;
 }
 

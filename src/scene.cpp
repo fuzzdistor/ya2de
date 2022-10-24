@@ -30,7 +30,7 @@ Scene::Scene(sf::RenderTarget& outputTarget, ResourcePack& resources, const std:
     , m_sceneTexture()
     , m_worldView(outputTarget.getDefaultView())
     , m_resources(resources)
-    , m_sceneGraph(SceneNode::Mask::none)
+    , m_sceneGraph(std::make_unique<SceneNode>(SceneNode::Mask::none))
     , m_viewStartPosition()
 {
     m_sceneTexture.create(m_target.getSize().x, m_target.getSize().y);
@@ -39,6 +39,9 @@ Scene::Scene(sf::RenderTarget& outputTarget, ResourcePack& resources, const std:
 
     loadResources();
     buildScene(sceneRecipe);
+    
+    // call the init of every lua script in the scene
+    m_sceneGraph->init();
 
     // Prepare the view
     m_worldView.setCenter(m_viewStartPosition);
@@ -50,16 +53,16 @@ void Scene::update(sf::Time dt)
     /* while (!mCommandQueue.isEmpty()) */
     /*     mSceneGraph.onCommand(mCommandQueue.pop(), dt); */
 
-    m_sceneGraph.update(dt);
+    m_sceneGraph->update(dt);
 
     handleCollisions();
-    m_sceneGraph.removeMarkedChildren();
+    m_sceneGraph->removeMarkedChildren();
 }
 
 void Scene::draw()
 {
     m_target.setView(m_worldView);
-    m_target.draw(m_sceneGraph);
+    m_target.draw(*m_sceneGraph.get());
 }
 
 bool Scene::requestsSceneChange() const
@@ -90,13 +93,6 @@ bool matchesMask(SceneNode::Pair& colliders, SceneNode::Mask mask1, SceneNode::M
     auto checkMask1 = static_cast<unsigned int>(mask1);
     auto checkMask2 = static_cast<unsigned int>(mask2);
 
-    /* auto nodeMask1 = colliders.first->getMask(); */
-    /* auto nodeMask2 = colliders.second->getMask(); */
-
-    /* auto checkMask1 = mask1; */
-    /* auto checkMask2 = mask2; */
-
-
     // Make sure first pair entry has category type1 and second has type2
     if (checkMask1 & nodeMask1 && checkMask2 & nodeMask2)
     {
@@ -117,7 +113,7 @@ bool matchesMask(SceneNode::Pair& colliders, SceneNode::Mask mask1, SceneNode::M
 void Scene::handleCollisions()
 {
     std::set<SceneNode::Pair> collisionPairs;
-    m_sceneGraph.checkSceneCollision(m_sceneGraph, collisionPairs);
+    m_sceneGraph->checkSceneCollision(*m_sceneGraph.get(), collisionPairs);
 
     for (auto pair : collisionPairs)
     {
@@ -138,25 +134,14 @@ void Scene::handleCollisions()
 
 void Scene::buildScene(const ordered_json& recipe)
 {
-    m_logger.debug() << "buildScene";
+    m_logger.info() << "Building scene start";
+    sf::Clock sceneBuildTimer;
+    sceneBuildTimer.restart();
 
     NodeFactories nf(m_resources);
+    m_sceneGraph = nf.createSceneGraph(recipe);
 
-    sf::Clock timer;
-
-    m_logger.info() << "Building scene start";
-    timer.restart();
-
-    for (auto& nodeRecipe : recipe)
-    {
-        m_logger.debug() << nodeRecipe.dump();
-        m_sceneGraph.attachChild(nf.createNode(nodeRecipe));
-    }
-
-    m_sceneGraph.init();
-
-    m_logger.info() << "Finished building scene in " << timer.restart().asMicroseconds() << "us";
-
+    m_logger.info() << "Finished building scene in " << sceneBuildTimer.restart().asMicroseconds() << "us";
 }
 
 sf::FloatRect Scene::getViewBounds() const

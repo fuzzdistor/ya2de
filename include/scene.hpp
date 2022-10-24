@@ -45,7 +45,7 @@ private:
     std::string m_toArea{};
     //SoundPlayer& m_sounds;
 
-    SceneNode m_sceneGraph;
+    SceneNode::UniPtr m_sceneGraph;
     sf::Vector2f m_viewStartPosition;
     //CommandQueue m_commandQueue;
 

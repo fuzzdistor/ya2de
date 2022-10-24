@@ -31,17 +31,20 @@ public:
         SoundPlayerNode,
         TriggerNode,
         AreaSwitchNode,
+        TextboxNode,
         Invalid = -1,
     };
 
     NodeFactories(const ResourcePack& resources);
-    std::unique_ptr<SceneNode> createNode(const ordered_json& recipe) const;
+    std::unique_ptr<SceneNode> createSceneGraph(const ordered_json& recipe) const;
 
 private:
 
+    std::unique_ptr<SceneNode> createNode(const ordered_json& recipe) const;
     std::unique_ptr<SceneNode> nodeConstructor(const ordered_json& recipe) const;
     std::map<NodeID, SetterFunction> m_nodeSetters;
     Log::Logger m_logger { "NodeFactories" };
+    std::map<NodeID, std::vector<NodeID>> m_nodeComposition;
 };
 
 // nlohmann json specializations for NodeID enum
@@ -56,6 +59,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(NodeFactories::NodeID, {
     { NodeFactories::NodeID::SoundPlayerNode, "SoundPlayerNode" },
     { NodeFactories::NodeID::TriggerNode, "TriggerNode" },
     { NodeFactories::NodeID::AreaSwitchNode, "AreaSwitchNode" },
+    { NodeFactories::NodeID::TextboxNode, "TextboxNode" },
 })
 
 #endif // TEST_NODEFACTORIES_HPP

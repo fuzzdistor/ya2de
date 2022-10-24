@@ -23,8 +23,10 @@ public:
     void setString(std::string string);
     std::string getString() const;
 
+
 private:
     virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const override;
+
     sf::Text m_text;
     sf::Sound m_sound;
     sf::SoundBuffer m_soundbuffer;

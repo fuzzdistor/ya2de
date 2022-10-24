@@ -1,3 +1,4 @@
+#include "textboxnode.hpp"
 #include <SFML/Audio/Sound.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <LoggerCpp/LoggerCpp.h>
@@ -25,7 +26,18 @@
 
 NodeFactories::NodeFactories(const ResourcePack& resources)
     : m_nodeSetters()
+    , m_nodeComposition()
 {
+    m_nodeComposition[NodeID::AreaSwitchNode] = { NodeID::SceneNode, NodeID::AreaSwitchNode };
+    m_nodeComposition[NodeID::ShapeNode] = { NodeID::SceneNode, NodeID::ShapeNode };
+    m_nodeComposition[NodeID::SpriteNode] = { NodeID::SceneNode, NodeID::SpriteNode };
+    m_nodeComposition[NodeID::TextNode] = { NodeID::SceneNode, NodeID::TextNode };
+    m_nodeComposition[NodeID::SoundPlayerNode] = { NodeID::SceneNode, NodeID::SoundPlayerNode };
+    m_nodeComposition[NodeID::TriggerNode] = { NodeID::SceneNode, NodeID::TriggerNode };
+    m_nodeComposition[NodeID::TileMapNode] = { NodeID::SceneNode, NodeID::TileMapNode };
+    m_nodeComposition[NodeID::YSortNode] = { NodeID::SceneNode, NodeID::YSortNode };
+    m_nodeComposition[NodeID::TextboxNode] = { NodeID::SceneNode, NodeID::TextNode, NodeID::TextboxNode };
+
     //////////////
     // SETTERS
     //////////////
@@ -106,6 +118,16 @@ NodeFactories::NodeFactories(const ResourcePack& resources)
         if(chk.fieldType("outline_color", json::value_t::array))
             recipeNode->setOutlineColor(sf::Color(recipe["outline_color"][0], recipe["outline_color"][1], recipe["outline_color"][2], recipe["outline_color"][3]));
     };
+    m_nodeSetters[NodeID::TextboxNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
+    {
+        m_logger.debug() << "TextboxNode Settings";
+        auto recipeNode = static_cast<TextboxNode*>(node);
+
+        Checker chk(recipe);
+
+        if (chk.fieldType("dialogue", json::value_t::array))
+            recipeNode->setDialogue(recipe["dialogue"].get<std::vector<std::string>>());
+    };
     m_nodeSetters[NodeID::SoundPlayerNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {
         m_logger.debug() << "SoundPlayer Settings";
@@ -162,22 +184,38 @@ NodeFactories::NodeFactories(const ResourcePack& resources)
         if (chk.fieldType("script", json::value_t::string))
             node->loadScriptFile(recipe["script"].get_ref<const std::string&>());
     };
+
+
+
 }
+
+SceneNode::UniPtr NodeFactories::createSceneGraph(const ordered_json& sceneRecipe) const
+{
+    auto sceneGraph = std::make_unique<SceneNode>(SceneNode::Mask::none);
+    for (auto& nodeRecipe : sceneRecipe)
+    {
+        m_logger.debug() << nodeRecipe.dump();
+        sceneGraph->attachChild(createNode(nodeRecipe));
+    }
+
+    return sceneGraph;
+}
+
 
 SceneNode::UniPtr NodeFactories::createNode(const ordered_json& recipe) const
 {
-    m_logger.debug() << "Creating Node";
     m_logger.debug() << "Looking for constructor of type " << recipe["NodeType"];
     SceneNode::UniPtr node = nodeConstructor(recipe);
 
     // if it has children create them recursively and attach them
     if (recipe.contains("children") && recipe["children"].is_array())
     {
-        for (const auto& child : recipe["children"])
+        for (const auto& childRecipe : recipe["children"])
         {
-            node->attachChild(createNode(child));
+            node->attachChild(createNode(childRecipe));
         }
     }
+
     // not using std::move for local object preserves copy-elision
     return node;
 }
@@ -186,9 +224,7 @@ SceneNode::UniPtr NodeFactories::nodeConstructor(const ordered_json& recipe) con
 {
     NodeID id = recipe["NodeType"];
 
-    m_logger.debug() << "NodeConstructor";
-
-    m_logger.debug() << "Creating Node";
+    m_logger.debug() << "Constructing Node";
 
     SceneNode::UniPtr node;
     switch (id)
@@ -217,6 +253,9 @@ SceneNode::UniPtr NodeFactories::nodeConstructor(const ordered_json& recipe) con
         case NodeID::AreaSwitchNode:
             node = std::make_unique<AreaSwitchNode>();
             break;
+        case NodeID::TextboxNode:
+            node = std::make_unique<TextboxNode>();
+            break;
         case NodeID::SceneNode:
             m_logger.error() << "SceneNode is not a valid node!";
             throw std::logic_error("SceneNode is not a valid node!");
@@ -227,11 +266,11 @@ SceneNode::UniPtr NodeFactories::nodeConstructor(const ordered_json& recipe) con
             break;
     }
 
-    m_logger.debug() << "Configuring SceneNode";
-    m_nodeSetters.at(NodeID::SceneNode)(node.get(), recipe);
-
-    m_logger.debug() << "Configuring " << recipe["NodeType"].get<std::string_view>();
-    m_nodeSetters.at(id)(node.get(), recipe);
+    for (auto component : m_nodeComposition.at(id))
+    {
+        m_logger.debug() << "Configuring " << recipe["NodeType"].get<std::string_view>();
+        m_nodeSetters.at(component)(node.get(), recipe);
+    }
 
     return node;
 }

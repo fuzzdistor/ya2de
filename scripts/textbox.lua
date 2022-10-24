@@ -1,6 +1,6 @@
 local my = {}
 
-local feedText = coroutine.create(function ()
+local function textFeeder()
     local i = 1
     while i <= #my.text do
         if text:getTextWidth() > 600 then
@@ -19,7 +19,9 @@ local feedText = coroutine.create(function ()
         coroutine.yield()
         i = i+1
     end
-end)
+end
+
+local feedText = coroutine.create(textFeeder)
 
 function init()
     this:setScale(1, 1)
@@ -32,6 +34,7 @@ function init()
     text:setString("");
 
     my.acc_time = 0
+    my.deb_acc_time = 0
     my.text_speed = 0.05
 
     my.pitch = 1
@@ -42,7 +45,21 @@ function handler(message)
 end
 
 function update(dt)
-    if checkAction("move_up") then my.text_speed = 0.01 end
+    if checkAction("action_b") then my.text_speed = 0.01 end
+    if checkAction("action_a") and not my.debounceflag then
+        if textbox:nextLine() then
+            my.text = textbox:getDialogueLine(textbox:getCurrentLineIndex())
+            feedText = coroutine.create(textFeeder)
+            my.debounceflag = true;
+        end
+    end
+    if my.debounceflag then
+        my.deb_acc_time = my.deb_acc_time + dt;
+        if my.deb_acc_time > 1 then
+            my.deb_acc_time = 0
+            my.debounceflag = false
+        end
+    end
     my.acc_time = my.acc_time + dt
     if my.acc_time > my.text_speed then
         my.acc_time = my.acc_time - my.text_speed

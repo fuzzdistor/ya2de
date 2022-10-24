@@ -31,6 +31,7 @@ add_executable("${CMAKE_PROJECT_NAME}"
  src/soundplayernode.cpp
  src/spritenode.cpp
  src/textnode.cpp
+ src/textboxnode.cpp
  src/tilemapnode.cpp
  src/tileset.cpp
  src/triggernode.cpp
@@ -50,6 +51,7 @@ add_executable("${CMAKE_PROJECT_NAME}"
  include/soundplayernode.hpp
  include/spritenode.hpp
  include/textnode.hpp
+ include/textboxnode.hpp
  include/tilemapnode.hpp
  include/tileset.hpp
  include/triggernode.hpp
