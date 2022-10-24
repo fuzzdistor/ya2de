@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(MillieGame LANGUAGES CXX)
+project(YA2DE LANGUAGES CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS OFF)
 set(CMAKE_BUILD_TYPE DEBUG)
@@ -13,6 +13,7 @@ include_directories(
   "${CMAKE_SOURCE_DIR}/extlibs/Sol2/include"
   "${CMAKE_SOURCE_DIR}/extlibs/lua-5.4.4/src"
   "${CMAKE_SOURCE_DIR}/extlibs/nlohmann-json/include"
+  ${SFML_INCLUDE_DIR}
 )
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/extlibs/LoggerCpp")
@@ -86,9 +87,9 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 set_target_properties(nlohmann-json PROPERTIES LINKER_LANGUAGE CXX)
 
 if(CMAKE_BUILD_TYPE MATCHES RELEASE)
-    target_link_libraries("${CMAKE_PROJECT_NAME}" sfml-graphics sfml-window sfml-system sfml-audio LoggerCpp sol2 lua)
+    target_link_libraries("${CMAKE_PROJECT_NAME}" ${SFML_LIBRARIES} sfml-graphics sfml-window sfml-system sfml-audio LoggerCpp sol2 lua)
 endif()
 if(CMAKE_BUILD_TYPE MATCHES DEBUG)
-    target_link_libraries("${CMAKE_PROJECT_NAME}" sfml-graphics-d sfml-window-d sfml-system-d sfml-audio-d LoggerCpp sol2 lua)
+    target_link_libraries("${CMAKE_PROJECT_NAME}" ${SFML_LIBRARIES} sfml-graphics-d sfml-window-d sfml-system-d sfml-audio-d LoggerCpp sol2 lua)
 endif()
 
