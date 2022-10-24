@@ -44,6 +44,7 @@ public:
     explicit SceneNode(Mask mask);
     virtual ~SceneNode() = default;
     
+    void init();
     virtual void update(sf::Time dt);
 
     sf::Vector2f getWorldPosition() const;
@@ -72,6 +73,8 @@ public:
 
 
 private:
+    void initCurrent();
+    void initChildren();
     virtual void updateCurrent(sf::Time dt);
     void updateChildren(sf::Time dt);
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;

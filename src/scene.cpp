@@ -1,5 +1,5 @@
 #include "LoggerCpp/Log.h"
-#include "ResourcesHolder.hpp"
+#include "resourcepack.hpp"
 #include "areaswitchnode.hpp"
 #include "nodefactories.hpp"
 #include "scenenode.hpp"
@@ -152,6 +152,8 @@ void Scene::buildScene(const ordered_json& recipe)
         m_logger.debug() << nodeRecipe.dump();
         m_sceneGraph.attachChild(nf.createNode(nodeRecipe));
     }
+
+    m_sceneGraph.init();
 
     m_logger.info() << "Finished building scene in " << timer.restart().asMicroseconds() << "us";
 

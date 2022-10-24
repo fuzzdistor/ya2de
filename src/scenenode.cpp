@@ -94,6 +94,8 @@ SceneNode::SceneNode(SceneNode::Mask mask)
                 )
             , "setScale"
             , static_cast<void(SceneNode::*)(float, float)>(&SceneNode::setScale)
+            , "rotate"
+            , &SceneNode::rotate
             , "setRotation"
             , &SceneNode::setRotation
             , "getRotation"
@@ -255,10 +257,29 @@ SceneNode::UniPtr SceneNode::dettachChild(const SceneNode &node)
     return result;
 }
 
+void SceneNode::init()
+{
+    initCurrent();
+    initChildren();
+}
+
 void SceneNode::update(sf::Time dt)
 {
     updateCurrent(dt);
     updateChildren(dt);
+}
+
+void SceneNode::initCurrent() 
+{
+    sol::protected_function linit(m_script->get<sol::function>("init"));
+    auto presult = linit();
+    //if (!presult.valid())
+}
+
+void SceneNode::initChildren()
+{
+    for(auto& child: m_children)
+        child->init();
 }
 
 void SceneNode::updateCurrent(sf::Time dt) 
