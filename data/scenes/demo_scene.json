@@ -33,8 +33,7 @@
     "fill_color": [255, 255, 255, 128],
     "size": [700.0, 180.0],
     "position": [-350.0, 100.0],
-    "shape": 0,
-    "debug": true
+    "shape": 0
   },
   {
     "NodeType": "SpriteNode",
@@ -74,8 +73,9 @@
   {
     "NodeType": "TextNode",
     "fontid": "Main",
+    "string": "Character2",
     "position": [
-      -350,
+      -345,
       100
     ],
     "character_size": 20,
@@ -84,6 +84,7 @@
   {
     "NodeType": "TextNode",
     "fontid": "Main",
+    "string": "Touching the orange box will make you spin!",
     "script": "scripts/textbox.lua"
   },
   {

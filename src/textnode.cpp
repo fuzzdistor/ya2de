@@ -1,3 +1,4 @@
+#include "LoggerCpp/Logger.h"
 #include <SFML/Config.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -18,7 +19,6 @@ TextNode::TextNode()
     // setting all kinds of APIs 
     luavm->new_usertype<sf::Color>("Color"
             , sol::constructors<sf::Color(sf::Uint32)>());
-    luavm->set("text", &m_text);
     luavm->set("sound", &m_sound);
     luavm->new_usertype<sf::Sound>("Sound"
             , "play"
@@ -28,19 +28,22 @@ TextNode::TextNode()
             , "setPitch"
             , &sf::Sound::setPitch
             );
-    luavm->new_usertype<sf::Text>("Text"
+    luavm->set("text", this);
+    luavm->new_usertype<TextNode>("Text"
             , "setCharacterSize"
-            , &sf::Text::setCharacterSize
+            , &TextNode::setCharacterSize
             , "setFillColor"
-            , &sf::Text::setFillColor
+            , &TextNode::setFillColor
             , "setOutlineColor"
-            , &sf::Text::setOutlineColor
+            , &TextNode::setOutlineColor
             , "setOutlineThickness"
-            , &sf::Text::setOutlineThickness
+            , &TextNode::setOutlineThickness
             , "setString"
-            , &sf::Text::setString
+            , &TextNode::setString
+            , "getTextWidth"
+            , &TextNode::getTextWidth
             , "getString"
-            , &sf::Text::getString
+            , &TextNode::getString
             );
 
     // I've got no idea how to pass 
@@ -48,25 +51,15 @@ TextNode::TextNode()
     // and call it from within lua with a 
     // const string ref and not by value
     // so that's why this ugly function goes
-    luavm->set_function("setString"
-            , &TextNode::setString
-            , this
-            );
-
-    luavm->set_function("getTextWidth"
-            , &TextNode::getTextWidth
-            , this
-            );
 
     // sensible text defaults
-    m_text.setCharacterSize(20);
-    m_text.setOutlineThickness(5);
-    m_text.setFillColor(sf::Color(0xffffffff));
-    m_text.setOutlineColor(sf::Color(0x000000ff));
-    m_text.setString("DEFAULT");
-
     m_soundbuffer.loadFromFile("media/sounds/m_speech.wav");
     m_sound.setBuffer(m_soundbuffer);
+}
+
+std::string TextNode::getString() const
+{
+    return m_text.getString();
 }
 
 void TextNode::setCharacterSize(unsigned int size)

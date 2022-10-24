@@ -20,9 +20,10 @@ public:
     void setOutlineThickness(float thickness);
     void setFillColor(const sf::Color color);
     void setOutlineColor(const sf::Color color);
+    void setString(std::string string);
+    std::string getString() const;
 
 private:
-    void setString(std::string string);
     virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const override;
     sf::Text m_text;
     sf::Sound m_sound;

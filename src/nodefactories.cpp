@@ -91,17 +91,20 @@ NodeFactories::NodeFactories(const ResourcePack& resources)
         if(chk.fieldType("fontid", json::value_t::string))
             recipeNode->setFont(resources.fonts.get(recipe["fontid"].get<FontID>()));
 
-        if(chk.fieldType("characte_rsize", json::value_t::number_unsigned))
+        if(chk.fieldType("character_size", json::value_t::number_unsigned))
             recipeNode->setCharacterSize(recipe["character_size"].get<unsigned int>());
 
         if(chk.fieldType("outline_thickness", json::value_t::number_float))
             recipeNode->setOutlineThickness(recipe["outline_thickness"].get<float>());
 
-        if(chk.fieldType("fill_color", json::value_t::array))
-            recipeNode->setFillColor(sf::Color(recipe["fill_color"][0], recipe["fill_color"][1], recipe["fill_color"][2], recipe["fill_color"][3])); 
+        if(chk.fieldType("string", json::value_t::string))
+            recipeNode->setString(recipe["string"].get_ref<const std::string&>());
 
-        if(chk.fieldType("outline_color", json::value_t::number_unsigned))
-            recipeNode->setOutlineColor(sf::Color(recipe["outline_color"].get<unsigned int>()));
+        if(chk.fieldType("fill_color", json::value_t::array))
+            recipeNode->setFillColor(sf::Color(recipe["fill_color"][0], recipe["fill_color"][1], recipe["fill_color"][2], recipe["fill_color"][3]));
+
+        if(chk.fieldType("outline_color", json::value_t::array))
+            recipeNode->setOutlineColor(sf::Color(recipe["outline_color"][0], recipe["outline_color"][1], recipe["outline_color"][2], recipe["outline_color"][3]));
     };
     m_nodeSetters[NodeID::SoundPlayerNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {

@@ -100,16 +100,20 @@
     "NodeType": "TextNode",
     "fontid": "Main",
     "position": [
-      -350,
+      -345,
       100
     ],
+    "string": "Character1",
     "character_size": 20,
-    "outline_thickness": 2.0
+    "fill_color": [255, 255, 255, 255],
+    "outline_thickness": 3.0,
+    "outline_color": [0, 0, 0, 255]
   },
   {
     "NodeType": "TextNode",
     "fontid": "Main",
-    "script": "scripts/textbox.lua"
+    "script": "scripts/textbox.lua",
+    "string": "This is a demo string that fits inside the textbox!"
   },
   {
     "NodeType": "AreaSwitchNode",
