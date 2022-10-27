@@ -6,6 +6,7 @@
 #include <LoggerCpp/Logger.h>
 #include <sol/error.hpp>
 #include <sol/forward.hpp>
+#include <sol/inheritance.hpp>
 #include <sol/sol.hpp>
 
 #include <spritenode.hpp>
@@ -27,6 +28,14 @@ SpriteNode::SpriteNode(const sf::Texture& texture)
     m_sprite.setTexture(texture);
 }
 
+void SpriteNode::setLuaUsertype()
+{
+    auto usertype = getLuaState()->new_usertype<SpriteNode>("SpriteNode"
+            , sol::base_classes, sol::bases<SceneNode>());
+
+    SceneNode::setLuaUsertype();
+}
+
 sf::FloatRect SpriteNode::getBoundingRect() const
 { 
     sf::FloatRect rect(m_sprite.getTextureRect());
@@ -41,12 +50,12 @@ void SpriteNode::setTexture(const sf::Texture& texture)
     m_sprite.setTexture(texture);
 }
 
-void SpriteNode::setOrigin(const sf::Vector2f origin)
+void SpriteNode::setSpriteOrigin(const sf::Vector2f origin)
 {
     setOrigin(origin.x, origin.y);
 }
 
-void SpriteNode::setOrigin(const float x, const float y)
+void SpriteNode::setSpriteOrigin(const float x, const float y)
 {
     m_sprite.setOrigin(x, y);
 }

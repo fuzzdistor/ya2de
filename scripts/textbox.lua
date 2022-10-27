@@ -3,41 +3,41 @@ local my = {}
 local function textFeeder()
     local i = 1
     while i <= #my.text do
-        if text:getTextWidth() > 600 then
+        if node:getTextWidth() > node.box_width then
             local last_space = 1
             while my.text:sub(i-last_space,i-last_space) ~= " " do
                 last_space = last_space + 1
             end
             my.text = my.text:sub(1,i-last_space-1)..'\n'..my.text:sub(i-last_space+1)
         end
-        text:setString(my.text:sub(1,i))
-        sound:stop()
+        node:setString(my.text:sub(1,i))
+
+        node.sound:stop()
         if my.text:sub(i,i):match("%w") then
-            sound:setPitch(my.pitch - 0.1 + math.random()/10)
-            sound:play()
+            node.sound:setPitch(my.pitch - 0.1 + math.random()/10)
+            node.sound:play()
         end
         coroutine.yield()
         i = i+1
     end
 end
 
-local feedText = coroutine.create(textFeeder)
-
 function init()
-    this:setScale(1, 1)
-    this:setPosition(-300, 160)
-    text:setCharacterSize(24)
-    text:setOutlineThickness(3)
+    node:setScale(1, 1)
+    node:setPosition(-300, 160)
+    node:setCharacterSize(24)
+    node:setOutlineThickness(3)
 
     math.randomseed(19)
-    my.text = text:getString()
-    text:setString("");
+    my.text = node:getDialogueLine(0)
 
     my.acc_time = 0
     my.deb_acc_time = 0
     my.text_speed = 0.05
 
     my.pitch = 1
+
+    feedText = coroutine.create(textFeeder)
 end
 
 function handler(message)
@@ -47,11 +47,12 @@ end
 function update(dt)
     if checkAction("action_b") then my.text_speed = 0.01 end
     if checkAction("action_a") and not my.debounceflag then
-        if textbox:nextLine() then
-            my.text = textbox:getDialogueLine(textbox:getCurrentLineIndex())
+        if node:nextLine() then
+            my.text = node:getDialogueLine(node.current_line_index)
             feedText = coroutine.create(textFeeder)
-            my.debounceflag = true;
+            my.text_speed = 0.05
         end
+        my.debounceflag = true;
     end
     if my.debounceflag then
         my.deb_acc_time = my.deb_acc_time + dt;

@@ -18,6 +18,7 @@ using json = nlohmann::json;
 
 class TileMapNode : public SceneNode
 {
+    // forward declaration
     template<typename T>
     struct Cell;
 
@@ -32,8 +33,11 @@ public:
     void setTileSet(const TileSet& tileSet);
     void setMapInfo(const std::string& mapInfoPath);
 
+protected:
+    void setLuaUsertype() override;
+
 private:
-    virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
+    virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
     void drawTileIndex(sf::RenderTarget& target, sf::RenderStates states) const;
     void buildMap();
     void buildTextures();
@@ -61,6 +65,8 @@ private:
     sf::Font d_font{};
     mutable sf::Text d_text{};
     mutable std::vector<Cell<float>> d_cachedPositions{};
+
+    friend class NodeFactories;
 };
 
 #endif // TEST_TILEMAPNODE_HPP

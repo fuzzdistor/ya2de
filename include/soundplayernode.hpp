@@ -18,6 +18,9 @@ public:
     void stop();
     void setLoop(bool loop);
 
+protected:
+    void setLuaUsertype() override;
+
 private:
     // Utility enum to give names to type indexes in variant
     enum PlayerType {
@@ -26,6 +29,8 @@ private:
     };
 
     std::variant<sf::Music, sf::Sound> m_player;
+
+    friend class NodeFactories;
 };
  
 #endif  // TEST_SOUNDPLAYERNODE_HPP

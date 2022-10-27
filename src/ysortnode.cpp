@@ -16,3 +16,11 @@ void YSortNode::update(sf::Time dt)
             [&](const auto& lhs, const auto& rhs)
             { return lhs->getPosition().y < rhs->getPosition().y; });
 }
+
+void YSortNode::setLuaUsertype()
+{
+    auto usertype = getLuaState()->new_usertype<YSortNode>("YSortNode"
+            , sol::base_classes, sol::bases<SceneNode>());
+
+    SceneNode::setLuaUsertype();
+}

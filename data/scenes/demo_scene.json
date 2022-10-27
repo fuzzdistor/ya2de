@@ -4,8 +4,8 @@
     "data_filepath": "media/tilemaps/room/room.txt",
     "tilesetid": "Room",
     "position": [
-      -180,
-      -120
+      -180.0,
+      -120.0
     ],
     "scale": [
       2,
@@ -82,9 +82,10 @@
     "outline_thickness": 2.0
   },
   {
-    "NodeType": "TextNode",
+    "NodeType": "TextboxNode",
     "fontid": "Main",
-    "string": "Touching the orange box will make you spin!",
+    "dialogue": ["Touching the orange box will make you spin!"],
+    "box_width": 600.0,
     "script": "scripts/textbox.lua"
   },
   {

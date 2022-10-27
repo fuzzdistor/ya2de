@@ -7,6 +7,7 @@
 #include <LoggerCpp/Logger.h>
 #include <nlohmann/json.hpp>
 
+#include <sol/inheritance.hpp>
 #include <tilemapnode.hpp>
 #include <resourceidentifiers.hpp>
 #include <tileset.hpp>
@@ -65,6 +66,22 @@ TileMapNode::TileMapNode(const std::string& jsonDataFilePath, const TileSet& til
     d_text.setOutlineColor(sf::Color::Black);
 }
 
+void TileMapNode::setLuaUsertype()
+{
+    auto cell = getLuaState()->new_usertype<Cell<unsigned int>>("Cell");
+    cell["x"] = &Cell<unsigned int>::x;
+    cell["y"] = &Cell<unsigned int>::y;
+    cell["id"] = &Cell<unsigned int>::id;
+
+    auto usertype = getLuaState()->new_usertype<TileMapNode>("TileMapNode"
+            , sol::base_classes, sol::bases<SceneNode>());
+
+    // TODO find a way to add this to the lua state
+    //usertype["tilemap_layers"] = &m_tileMapLayers;
+
+    SceneNode::setLuaUsertype();
+}
+
 void TileMapNode::setTileSize(float size)
 {
     float scale = size / static_cast<float>(m_tileSet->getTileHeight());
@@ -84,7 +101,6 @@ void TileMapNode::setMapInfo(const std::string& mapInfoPath)
     m_mapHeight = mapData["map_height"];
 
     m_mapLayerInfo = mapData["layers"];
-
 
     if(m_tileSet != nullptr)
         buildMap();
@@ -144,8 +160,10 @@ void TileMapNode::buildTextures()
 
         for(const auto& tile: layer)
         {
-            // the build order for normal tilemaps is top to bottom 
-            // in columns from left to right
+            // the build order for rectangular tilemaps is top to bottom 
+            // in columns from left to right. For isometric tilemaps it's from top to left
+            // in tilted columns from top to right. An example here for square tilemaps can be found here:
+            // https://cdn.discordapp.com/attachments/968305996491530244/1035165772529549402/TileOrder.gif
             sf::IntRect rect = sf::IntRect(m_tileSet->getTile(tile.id).textureRect);
             sf::Vector2u destination;
 

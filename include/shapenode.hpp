@@ -7,6 +7,7 @@
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <scenenode.hpp>
+#include <string_view>
 
 using uint = unsigned int;
 
@@ -23,20 +24,21 @@ public:
     void setSize(float x, float y);
     void setSize(const sf::Vector2f& size);
     void setFillColor(const sf::Color color);
-    void disable(bool status);
-    void setVisible(bool visibility);
-
     const sf::Color getFillColor() const;
-    constexpr bool isDisabled() const { return m_disabled; };
+
+protected:
+    virtual void setLuaUsertype() override;
 
 private:
     virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
     sf::FloatRect getBoundingRect() const override;
-    bool m_disabled{ false };
-    bool m_visibility{ true };
+    bool m_enabled{ true };
+    bool m_visible{ true };
 
     sf::RectangleShape m_shape;
     Shapes m_shapeID;
+
+    friend class NodeFactories;
 };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(ShapeNode::Shapes, {

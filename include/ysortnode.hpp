@@ -12,6 +12,11 @@ class YSortNode : public SceneNode
 public:
     YSortNode();
     virtual void update(sf::Time dt) override;
+
+protected:
+    virtual void setLuaUsertype() override;
+
+    friend class NodeFactories;
 };
 
 #endif // TEST_YSORTNODE_HPP

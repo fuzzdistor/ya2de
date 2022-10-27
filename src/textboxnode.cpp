@@ -2,62 +2,41 @@
 
 TextboxNode::TextboxNode()
 {
-    setString("");
-
-    auto luavm = getLuaState();
-
-    // setting all kinds of APIs 
-    luavm->set("textbox", this);
-    luavm->new_usertype<TextboxNode>("Textbox"
-            , "setDialogue"
-            , &TextboxNode::setDialogue
-            , "getDialogue"
-            , &TextboxNode::getDialogue
-            , "nextLine"
-            , &TextboxNode::nextLine
-            , "getDialogueLine"
-            , &TextboxNode::getDialogueLine
-            , "getCurrentLineIndex"
-            , &TextboxNode::getCurrentLineIndex
-            );
-}
-
-void TextboxNode::setDialogue(std::vector<std::string> string)
-{
-    m_dialogue = std::move(string);
-    setString(getDialogueLine(m_currentLineIndex));
-}
-
-size_t TextboxNode::getCurrentLineIndex() const
-{
-    return m_currentLineIndex;
 }
 
 bool TextboxNode::nextLine()
 {
-    if (m_currentLineIndex + 1 >= m_dialogue.size())
-    {
-        return false;
-    }
-    else 
+    // is the current line index not the last dialogue line?
+    if (m_currentLineIndex != m_dialogueLines.size() - 1)
     {
         m_currentLineIndex++;
         return true;
     }
+
+    return false;
 }
 
-std::vector<std::string> TextboxNode::getDialogue() const
+void TextboxNode::setLuaUsertype()
 {
-    return m_dialogue;
+    auto usertype = getLuaState()->new_usertype<TextboxNode>("TextboxNode"
+            , sol::base_classes, sol::bases<SceneNode, TextNode>());
+
+    usertype["dialogue"] = &TextboxNode::m_dialogueLines;
+    usertype["nextLine"] = &TextboxNode::nextLine;
+    usertype["getDialogueLine"] = &TextboxNode::getDialogueLine;
+    usertype["current_line_index"] = &TextboxNode::m_currentLineIndex;
+    usertype["box_width"] = &TextboxNode::m_textboxWidth;
+
+    TextNode::setLuaUsertype();
 }
 
 std::string TextboxNode::getDialogueLine(size_t index) const
 {
-    if (index >= m_dialogue.size())
+    if (index >= m_dialogueLines.size())
     {
-        m_logger.warning() << "Requested dialogue index out bounds! Max index of entries in m_dialogue: " << m_dialogue.size() - 1 << ". Requested index: " << index;
-        return m_dialogue.back();
+        m_logger.warning() << "Requested dialogue index out bounds! Max index of entries in m_dialogue: " << m_dialogueLines.size() - 1 << ". Requested index: " << index;
+        return m_dialogueLines.back();
     }
-    return m_dialogue.at(index);
+    return m_dialogueLines.at(index);
 }
 

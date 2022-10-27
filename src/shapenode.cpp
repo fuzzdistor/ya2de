@@ -10,6 +10,21 @@ ShapeNode::ShapeNode()
 {
 }
 
+void ShapeNode::setLuaUsertype()
+{
+    auto usertype = getLuaState()->new_usertype<ShapeNode>("ShapeNode"
+            , sol::base_classes, sol::bases<SceneNode>());
+
+    usertype["enabled"] = &ShapeNode::m_enabled;
+    usertype["visible"] = &ShapeNode::m_visible;
+    usertype["setFillColor"] = &ShapeNode::setFillColor;
+    usertype["setSize"] = sol::overload(
+            static_cast<void(ShapeNode::*)(sf::Vector2f const&)>(&ShapeNode::setSize)
+            , static_cast<void(ShapeNode::*)(float, float)>(&ShapeNode::setSize));
+    usertype["getFillColor"] = &ShapeNode::getFillColor;
+
+    SceneNode::setLuaUsertype();
+}
 
 void ShapeNode::setSize(float x, float y)
 {
@@ -26,16 +41,6 @@ void ShapeNode::setFillColor(const sf::Color color)
     m_shape.setFillColor(color);
 }
 
-void ShapeNode::disable(bool status)
-{
-    m_disabled = status;
-}
-
-void ShapeNode::setVisible(bool visibility)
-{
-    m_visibility = visibility;
-}
-
 const sf::Color ShapeNode::getFillColor() const
 {
     return m_shape.getFillColor();
@@ -43,7 +48,7 @@ const sf::Color ShapeNode::getFillColor() const
 
 sf::FloatRect ShapeNode::getBoundingRect() const
 {
-    if (m_disabled)
+    if (!m_enabled)
         return sf::FloatRect{};
 
     sf::FloatRect rect = m_shape.getLocalBounds();
@@ -54,7 +59,7 @@ sf::FloatRect ShapeNode::getBoundingRect() const
 
 void ShapeNode::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    if (m_visibility)
+    if (m_visible)
         target.draw(m_shape, states);
 }
 

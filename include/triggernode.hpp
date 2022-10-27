@@ -13,6 +13,9 @@ public:
 
     void applyCallbackTo(SceneNode* node);
 
+protected:
+    virtual void setLuaUsertype() override;
+
 private:
     sf::FloatRect getBoundingRect() const override;
 
@@ -21,6 +24,7 @@ private:
 
     Log::Logger m_logger{ "TriggerNode" };
 
+    friend class NodeFactories;
 };
 
 #endif // TEST_TRIGGERNODE_HPP

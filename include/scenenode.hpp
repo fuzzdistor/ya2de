@@ -1,7 +1,6 @@
 #ifndef TEST_SCENENODE_HPP
 #define TEST_SCENENODE_HPP
 
-#include "nlohmann/json.hpp"
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
@@ -10,7 +9,7 @@
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
-
+#include <nlohmann/json.hpp>
 #include <sol/reference.hpp>
 #include <sol/sol.hpp>
 
@@ -42,7 +41,7 @@ public:
     };
 
     explicit SceneNode(Mask mask);
-    virtual ~SceneNode() = default;
+    virtual ~SceneNode();
     
     void init();
     virtual void update(sf::Time dt);
@@ -71,10 +70,10 @@ public:
     constexpr Mask getMask() const { return m_mask; }
     constexpr bool isDebug() const { return m_debugFlag; }
 
+protected:
+    virtual void setLuaUsertype();
 
 private:
-    void initCurrent();
-    void initChildren();
     virtual void updateCurrent(sf::Time dt);
     void updateChildren(sf::Time dt);
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -92,6 +91,8 @@ private:
     bool m_debugFlag;
     bool m_markedForDestruction;
     const ScriptPtr m_script;
+
+    friend class NodeFactories;
 };
 
 bool	collision(const SceneNode& lhs, const SceneNode& rhs);

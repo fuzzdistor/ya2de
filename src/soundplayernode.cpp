@@ -17,6 +17,16 @@ void SoundPlayerNode::setSoundSource(const sf::SoundBuffer& buffer)
         std::get<sf::Sound>(m_player).setBuffer(buffer);
 }
 
+void SoundPlayerNode::setLuaUsertype()
+{
+    auto usertype = getLuaState()->new_usertype<SoundPlayerNode>("SoundPlayerNode"
+            , sol::base_classes, sol::bases<SceneNode>());
+
+    usertype["play"] = &SoundPlayerNode::play;
+    usertype["stop"] = &SoundPlayerNode::stop;
+
+    SceneNode::setLuaUsertype();
+}
 void SoundPlayerNode::setSoundSource(const std::string& filepath)
 {
     if(m_player.index() != PlayerType::Music)   // if m_player does not hold a Music type...

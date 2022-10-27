@@ -16,11 +16,20 @@ TextNode::TextNode()
     
     luavm->open_libraries(sol::lib::coroutine);
 
-    // setting all kinds of APIs 
-    luavm->new_usertype<sf::Color>("Color"
-            , sol::constructors<sf::Color(sf::Uint32)>());
-    luavm->set("sound", &m_sound);
-    luavm->new_usertype<sf::Sound>("Sound"
+    m_soundbuffer.loadFromFile("media/sounds/m_speech.wav");
+    m_sound.setBuffer(m_soundbuffer);
+    std::vector<int> v;
+}
+
+std::string TextNode::getString() const
+{
+    return m_text.getString();
+}
+
+
+void TextNode::setLuaUsertype()
+{
+    getLuaState()->new_usertype<sf::Sound>("Sound"
             , "play"
             , &sf::Sound::play
             , "stop"
@@ -28,38 +37,20 @@ TextNode::TextNode()
             , "setPitch"
             , &sf::Sound::setPitch
             );
-    luavm->set("text", this);
-    luavm->new_usertype<TextNode>("Text"
-            , "setCharacterSize"
-            , &TextNode::setCharacterSize
-            , "setFillColor"
-            , &TextNode::setFillColor
-            , "setOutlineColor"
-            , &TextNode::setOutlineColor
-            , "setOutlineThickness"
-            , &TextNode::setOutlineThickness
-            , "setString"
-            , &TextNode::setString
-            , "getTextWidth"
-            , &TextNode::getTextWidth
-            , "getString"
-            , &TextNode::getString
-            );
 
-    // I've got no idea how to pass 
-    // sf::Text::setString as function 
-    // and call it from within lua with a 
-    // const string ref and not by value
-    // so that's why this ugly function goes
+    auto usertype = getLuaState()->new_usertype<TextNode>("TextNode"
+            , sol::base_classes, sol::bases<SceneNode>());
 
-    // sensible text defaults
-    m_soundbuffer.loadFromFile("media/sounds/m_speech.wav");
-    m_sound.setBuffer(m_soundbuffer);
-}
+    usertype["sound"] = &TextNode::m_sound;
+    usertype["setCharacterSize"] = &TextNode::setCharacterSize;
+    usertype["setFillColor"] = &TextNode::setFillColor;
+    usertype["setOutlineColor"] = &TextNode::setOutlineColor;
+    usertype["setOutlineThickness"] = &TextNode::setOutlineThickness;
+    usertype["setString"] = &TextNode::setString;
+    usertype["getTextWidth"] = &TextNode::getTextWidth;
+    usertype["getString"] = &TextNode::getString;
 
-std::string TextNode::getString() const
-{
-    return m_text.getString();
+    SceneNode::setLuaUsertype();
 }
 
 void TextNode::setCharacterSize(unsigned int size)

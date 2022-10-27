@@ -9,8 +9,8 @@ class AreaSwitchNode : public SceneNode
 public:
     AreaSwitchNode();
 
-    void setDestinyArea(const std::string& destiny);
-    std::string_view getDestinyArea() const;
+protected:
+    void setLuaUsertype() override;
 
 private:
     sf::FloatRect getBoundingRect() const override;
@@ -18,6 +18,10 @@ private:
     mutable SceneNode* m_shapenode;
     std::string m_destinyArea{};
     Log::Logger m_logger{ "AreaSwitchNode" };
+
+
+    friend class NodeFactories;
 };
+
 
 #endif // TEST_AREASWITCHERNODE_HPP

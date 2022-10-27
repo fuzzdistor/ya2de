@@ -2,6 +2,7 @@
 #include <SFML/Audio/Sound.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <LoggerCpp/LoggerCpp.h>
+#include <algorithm>
 #include <nlohmann/json.hpp>
 
 #include <resourcepack.hpp>
@@ -28,15 +29,15 @@ NodeFactories::NodeFactories(const ResourcePack& resources)
     : m_nodeSetters()
     , m_nodeComposition()
 {
-    m_nodeComposition[NodeID::AreaSwitchNode] = { NodeID::SceneNode, NodeID::AreaSwitchNode };
-    m_nodeComposition[NodeID::ShapeNode] = { NodeID::SceneNode, NodeID::ShapeNode };
-    m_nodeComposition[NodeID::SpriteNode] = { NodeID::SceneNode, NodeID::SpriteNode };
-    m_nodeComposition[NodeID::TextNode] = { NodeID::SceneNode, NodeID::TextNode };
-    m_nodeComposition[NodeID::SoundPlayerNode] = { NodeID::SceneNode, NodeID::SoundPlayerNode };
-    m_nodeComposition[NodeID::TriggerNode] = { NodeID::SceneNode, NodeID::TriggerNode };
-    m_nodeComposition[NodeID::TileMapNode] = { NodeID::SceneNode, NodeID::TileMapNode };
-    m_nodeComposition[NodeID::YSortNode] = { NodeID::SceneNode, NodeID::YSortNode };
-    m_nodeComposition[NodeID::TextboxNode] = { NodeID::SceneNode, NodeID::TextNode, NodeID::TextboxNode };
+    m_nodeComposition[NodeID::AreaSwitchNode] = { NodeID::AreaSwitchNode, NodeID::SceneNode };
+    m_nodeComposition[NodeID::ShapeNode] = { NodeID::ShapeNode, NodeID::SceneNode };
+    m_nodeComposition[NodeID::SpriteNode] = { NodeID::SpriteNode, NodeID::SceneNode };
+    m_nodeComposition[NodeID::TextNode] = { NodeID::TextNode, NodeID::SceneNode };
+    m_nodeComposition[NodeID::SoundPlayerNode] = { NodeID::SoundPlayerNode, NodeID::SceneNode };
+    m_nodeComposition[NodeID::TriggerNode] = { NodeID::TriggerNode, NodeID::SceneNode };
+    m_nodeComposition[NodeID::TileMapNode] = { NodeID::TileMapNode, NodeID::SceneNode };
+    m_nodeComposition[NodeID::YSortNode] = { NodeID::YSortNode, NodeID::SceneNode };
+    m_nodeComposition[NodeID::TextboxNode] = { NodeID::TextNode, NodeID::TextboxNode, NodeID::SceneNode };
 
     //////////////
     // SETTERS
@@ -83,11 +84,11 @@ NodeFactories::NodeFactories(const ResourcePack& resources)
         if(chk.fieldType("fill_color", json::value_t::array))
             recipeNode->setFillColor(sf::Color(recipe["fill_color"][0], recipe["fill_color"][1], recipe["fill_color"][2], recipe["fill_color"][3])); 
 
-        if(chk.fieldType("disable", json::value_t::boolean))
-            recipeNode->disable(recipe["disable"].get<bool>());
+        if(chk.fieldType("enabled", json::value_t::boolean))
+            recipeNode->m_enabled = recipe["enabled"].get<bool>();
 
         if(chk.fieldType("visible", json::value_t::boolean))
-            recipeNode->setVisible(recipe["visible"].get<bool>());
+            recipeNode->m_visible = recipe["visible"].get<bool>();
     };
     m_nodeSetters[NodeID::YSortNode] = [&](SceneNode*, const ordered_json&) -> void
     {
@@ -125,8 +126,12 @@ NodeFactories::NodeFactories(const ResourcePack& resources)
 
         Checker chk(recipe);
 
+        if (chk.fieldType("box_width", json::value_t::number_float))
+            recipeNode->m_textboxWidth = recipe["box_width"].get<float>();
+
         if (chk.fieldType("dialogue", json::value_t::array))
-            recipeNode->setDialogue(recipe["dialogue"].get<std::vector<std::string>>());
+            recipeNode->m_dialogueLines = recipe["dialogue"].get<std::vector<std::string>>();
+
     };
     m_nodeSetters[NodeID::SoundPlayerNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {
@@ -152,7 +157,7 @@ NodeFactories::NodeFactories(const ResourcePack& resources)
         Checker chk(recipe);
 
         if (chk.fieldType("destiny", json::value_t::string))
-            recipeNode->setDestinyArea(recipe["destiny"].get_ref<const std::string&>());
+            recipeNode->m_destinyArea = recipe["destiny"].get_ref<const std::string&>();
     };
     m_nodeSetters[NodeID::TriggerNode] = [&](SceneNode*, const ordered_json&) -> void
     {
@@ -176,17 +181,14 @@ NodeFactories::NodeFactories(const ResourcePack& resources)
             node->setOrigin(recipe["origin"][0].get<float>(), recipe["origin"][1].get<float>());
 
         if (chk.fieldType("debug", json::value_t::boolean))
-            node->setDebugInfo(recipe["debug"].get<bool>());
+            node->m_debugFlag = recipe["debug"];
 
         if (chk.fieldType("mask", json::value_t::string))
-            node->setMask(recipe["mask"].get<SceneNode::Mask>());
+            node->m_mask = recipe["mask"];
 
         if (chk.fieldType("script", json::value_t::string))
             node->loadScriptFile(recipe["script"].get_ref<const std::string&>());
     };
-
-
-
 }
 
 SceneNode::UniPtr NodeFactories::createSceneGraph(const ordered_json& sceneRecipe) const
@@ -216,7 +218,6 @@ SceneNode::UniPtr NodeFactories::createNode(const ordered_json& recipe) const
         }
     }
 
-    // not using std::move for local object preserves copy-elision
     return node;
 }
 
@@ -226,51 +227,57 @@ SceneNode::UniPtr NodeFactories::nodeConstructor(const ordered_json& recipe) con
 
     m_logger.debug() << "Constructing Node";
 
-    SceneNode::UniPtr node;
-    switch (id)
+    auto node = [&]() -> SceneNode::UniPtr 
     {
-        case NodeID::SpriteNode:
-            node = std::make_unique<SpriteNode>();
-            break;
-        case NodeID::TileMapNode:
-            node = std::make_unique<TileMapNode>();
-            break;
-        case NodeID::ShapeNode:
-            node = std::make_unique<ShapeNode>();
-            break;
-        case NodeID::YSortNode:
-            node = std::make_unique<YSortNode>();
-            break;
-        case NodeID::TextNode:
-            node = std::make_unique<TextNode>();
-            break;
-        case NodeID::SoundPlayerNode:
-            node = std::make_unique<SoundPlayerNode>();
-            break;
-        case NodeID::TriggerNode:
-            node = std::make_unique<TriggerNode>();
-            break;
-        case NodeID::AreaSwitchNode:
-            node = std::make_unique<AreaSwitchNode>();
-            break;
-        case NodeID::TextboxNode:
-            node = std::make_unique<TextboxNode>();
-            break;
-        case NodeID::SceneNode:
-            m_logger.error() << "SceneNode is not a valid node!";
-            throw std::logic_error("SceneNode is not a valid node!");
-            break;
-        case NodeID::Invalid:
-            m_logger.error() << "Invalid node name passed!";
-            throw std::logic_error("Node id is not a valid node!");
-            break;
-    }
+        switch (id)
+        {
+            case NodeID::SpriteNode:
+                return makeUniqueNode<SpriteNode>();
+                break;
+            case NodeID::TileMapNode:
+                return makeUniqueNode<TileMapNode>();
+                break;
+            case NodeID::ShapeNode:
+                return makeUniqueNode<ShapeNode>();
+                break;
+            case NodeID::YSortNode:
+                return makeUniqueNode<YSortNode>();
+                break;
+            case NodeID::TextNode:
+                return makeUniqueNode<TextNode>();
+                break;
+            case NodeID::SoundPlayerNode:
+                return makeUniqueNode<SoundPlayerNode>();
+                break;
+            case NodeID::TriggerNode:
+                return makeUniqueNode<TriggerNode>();
+                break;
+            case NodeID::AreaSwitchNode:
+                return makeUniqueNode<AreaSwitchNode>();
+                break;
+            case NodeID::TextboxNode:
+                return makeUniqueNode<TextboxNode>();
+                break;
+            case NodeID::SceneNode:
+                m_logger.error() << "SceneNode is not a valid node!";
+                throw std::logic_error("SceneNode is not a valid node!");
+                break;
+            case NodeID::Invalid:
+                m_logger.error() << "Invalid node name passed!";
+                throw std::logic_error("Node id is not a valid node!");
+                break;
+        }
+        throw std::logic_error("How did you even get here?");
+        return nullptr;
+    }();
 
     for (auto component : m_nodeComposition.at(id))
     {
         m_logger.debug() << "Configuring " << recipe["NodeType"].get<std::string_view>();
         m_nodeSetters.at(component)(node.get(), recipe);
     }
+
+    // setting the variable name for the lua usertype
 
     return node;
 }

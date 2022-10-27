@@ -8,6 +8,16 @@ AreaSwitchNode::AreaSwitchNode()
 {
 }
 
+void AreaSwitchNode::setLuaUsertype()
+{
+    auto usertype = getLuaState()->new_usertype<AreaSwitchNode>("AreaSwitchNode"
+            , sol::base_classes, sol::bases<SceneNode>());
+
+    usertype["destiny_area"] = &AreaSwitchNode::m_destinyArea;
+
+    SceneNode::setLuaUsertype();
+}
+
 sf::FloatRect AreaSwitchNode::getBoundingRect() const
 {
     // search once for the first collision shape node in children
@@ -24,12 +34,5 @@ sf::FloatRect AreaSwitchNode::getBoundingRect() const
     return m_shapenode->getBoundingRect();
 }
 
-void AreaSwitchNode::setDestinyArea(const std::string& destiny)
-{
-    m_destinyArea = destiny;
-}
 
-std::string_view AreaSwitchNode::getDestinyArea() const
-{
-    return m_destinyArea;
-}
+

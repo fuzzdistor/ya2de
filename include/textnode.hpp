@@ -23,6 +23,8 @@ public:
     void setString(std::string string);
     std::string getString() const;
 
+protected:
+    virtual void setLuaUsertype() override;
 
 private:
     virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const override;
@@ -30,6 +32,8 @@ private:
     sf::Text m_text;
     sf::Sound m_sound;
     sf::SoundBuffer m_soundbuffer;
+
+    friend class NodeFactories;
 };
 
 #endif //TEST_TEXTNODE_HPP

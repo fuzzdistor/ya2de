@@ -1,4 +1,3 @@
-#include "scene.hpp"
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/PrimitiveType.hpp>
@@ -22,40 +21,13 @@
 #include <cmath>
 #include <sol/wrapper.hpp>
 
-sf::Keyboard::Key getKeyBind(const std::string_view action)
-{
-    if (action == "move_up")
-        return sf::Keyboard::W;
-    if (action == "move_down")
-        return sf::Keyboard::S;
-    if (action == "move_left")
-        return sf::Keyboard::A;
-    if (action == "move_right")
-        return sf::Keyboard::D;
-    if (action == "action_a")
-        return sf::Keyboard::J;
-    if (action == "action_b")
-        return sf::Keyboard::K;
-    return sf::Keyboard::KeyCount;
-}
-
-bool checkAction(const std::string& action)
-{
-    return sf::Keyboard::isKeyPressed(getKeyBind(action));
-}
-
-void normalize(sf::Vector2f& v)
-{
-    float m = v.x*v.x + v.y*v.y;
-    if (m != 0)
-        v /= sqrtf(m);
-}
 
 void my_panic(sol::optional<std::string> maybe_msg) {
-	std::cerr << "Lua is in a panic state and will now abort() the application" << std::endl;
+    Log::Logger logger("Lua panic handler");
+	logger.critic() << "Lua is in a panic state and will now abort() the application";
 	if (maybe_msg) {
 		const std::string& msg = maybe_msg.value();
-		std::cerr << "\terror message: " << msg << std::endl;
+		logger.critic() << "\terror message: " << msg;
 	}
 	// When this function exits, Lua will exhibit default behavior and abort()
 }
@@ -68,47 +40,27 @@ SceneNode::SceneNode(SceneNode::Mask mask)
     , m_markedForDestruction(false)
     , m_script(std::make_shared<sol::state>(sol::c_call<decltype(&my_panic), &my_panic>))
 {
-    m_script->open_libraries(
-            sol::lib::base, 
-            sol::lib::math, 
-            sol::lib::package,
-            sol::lib::table,
-            sol::lib::string);
+}
 
-    m_script->set_function("checkAction"
-            , &checkAction
-            );
+SceneNode::~SceneNode()
+{
+}
 
-    // Setting Vector2f
-    auto vector2f = m_script->new_usertype<sf::Vector2f>("Vector2f"
-            , sol::constructors<sf::Vector2f(float, float)>());
-    vector2f.set("x", &sf::Vector2f::x);
-    vector2f.set("y", &sf::Vector2f::y);
-    vector2f.set_function("normalize", &normalize);
-
-    // Setting API for Transformable object
-    m_script->set("this", this);
-    m_script->new_usertype<SceneNode>("SceneNode"
-            , "move"
-            , static_cast<void(SceneNode::*)(float, float)>(&SceneNode::move)
-            , "setPosition"
-            , sol::overload(
+void SceneNode::setLuaUsertype()
+{
+    auto usertype = getLuaState()->new_usertype<SceneNode>("SceneNode");
+    usertype["move"] = static_cast<void(SceneNode::*)(float, float)>(&SceneNode::move);
+    usertype["setPosition"] = sol::overload(
                 static_cast<void(SceneNode::*)(sf::Vector2f const&)>(&SceneNode::setPosition)
-                , static_cast<void(SceneNode::*)(float, float)>(&SceneNode::setPosition)
-                )
-            , "setScale"
-            , static_cast<void(SceneNode::*)(float, float)>(&SceneNode::setScale)
-            , "rotate"
-            , &SceneNode::rotate
-            , "setRotation"
-            , &SceneNode::setRotation
-            , "getRotation"
-            , &SceneNode::getRotation
-            , "getScale"
-            , &SceneNode::getScale
-            , "getPosition"
-            , &SceneNode::getPosition
-            );
+                , static_cast<void(SceneNode::*)(float, float)>(&SceneNode::setPosition));
+    usertype["setScale"] = static_cast<void(SceneNode::*)(float, float)>(&SceneNode::setScale);
+    usertype["rotate"] = &SceneNode::rotate;
+    usertype["setRotation"] = &SceneNode::setRotation;
+    usertype["getRotation"] = &SceneNode::getRotation;
+    usertype["getScale"] = &SceneNode::getScale;
+    usertype["getPosition"] = &SceneNode::getPosition;
+    //(*getLuaState())[usertype]["attachChild"] = &SceneNode::attachChild;
+    //(*getLuaState())[usertype]["dettachChild"] = &SceneNode::dettachChild;
 }
 
 bool SceneNode::loadScriptFile(const std::string& filepath)
@@ -263,27 +215,17 @@ SceneNode::UniPtr SceneNode::dettachChild(const SceneNode &node)
 
 void SceneNode::init()
 {
-    initCurrent();
-    initChildren();
+    sol::protected_function linit(m_script->get<sol::function>("init"));
+    auto presult = linit();
+    //if (!presult.valid())
+    for(auto& child: m_children)
+        child->init();
 }
 
 void SceneNode::update(sf::Time dt)
 {
     updateCurrent(dt);
     updateChildren(dt);
-}
-
-void SceneNode::initCurrent() 
-{
-    sol::protected_function linit(m_script->get<sol::function>("init"));
-    auto presult = linit();
-    //if (!presult.valid())
-}
-
-void SceneNode::initChildren()
-{
-    for(auto& child: m_children)
-        child->init();
 }
 
 void SceneNode::updateCurrent(sf::Time dt) 

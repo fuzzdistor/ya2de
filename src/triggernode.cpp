@@ -17,6 +17,16 @@ TriggerNode::TriggerNode()
     };
 }
 
+void TriggerNode::setLuaUsertype()
+{
+    auto usertype = getLuaState()->new_usertype<TriggerNode>("TriggerNode"
+            , sol::base_classes, sol::bases<SceneNode>());
+
+    usertype["m_callback"] = &TriggerNode::m_callback;
+
+    SceneNode::setLuaUsertype();
+}
+
 sf::FloatRect TriggerNode::getBoundingRect() const
 {
     // search once for the first collision shape node in children

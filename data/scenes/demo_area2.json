@@ -37,7 +37,8 @@
     "position": [
       -300,
       100
-    ]
+    ],
+    "box_width": 600.0
   },
   {
     "NodeType": "SpriteNode",
@@ -134,7 +135,7 @@
         "fill_color": [ 0, 255, 0, 128 ],
         "size": [ 50, 50 ],
         "mask": "CollisionShape",
-        "disable": false,
+        "enabled": true,
         "visible": true,
         "debug": true
       }

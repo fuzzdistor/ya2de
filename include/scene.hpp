@@ -1,9 +1,9 @@
 #ifndef TEST_SCENE_HPP
 #define TEST_SCENE_HPP
 
-#include "LoggerCpp/Logger.h"
-#include "resourcepack.hpp"
-#include "nodefactories.hpp"
+#include <LoggerCpp/Logger.h>
+#include <resourcepack.hpp>
+#include <nodefactories.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Texture.hpp>
@@ -31,6 +31,7 @@ public:
     const std::string& getRequestedScene() const;
 
 private:
+    bool matchesMask(SceneNode::Pair& colliders, SceneNode::Mask mask1, SceneNode::Mask mask2);
     void loadResources();
     void handleCollisions();
     void updateSounds();

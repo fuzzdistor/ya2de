@@ -1,6 +1,7 @@
 [Bb]uild/
 [Nn]otes/
-[Ll]og.*
+[Ll]og.txt
+[Ll]og.old.txt
 [Rr]un.*
 .vscode/
 .vs/

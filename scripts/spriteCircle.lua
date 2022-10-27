@@ -2,18 +2,19 @@ local flux = require("scripts.lib.flux")
 
 local my = {}
 
-my.position = this:getPosition()
-my.scale = Vector2f:new(5,5)
+print(node:getPosition())
+my.position = node:getPosition()
+my.scale = Vector2:new(5,5)
 
 local circleCoordsX = {
-    this:getPosition().x - 200 * this:getScale().x,
-    this:getPosition().x,
+    node:getPosition().x - 200 * node:getScale().x,
+    node:getPosition().x,
 }
 
 local circleCoordsY = {
-    this:getPosition().y + 100 * this:getScale().y,
-    this:getPosition().y - 100 * this:getScale().y,
-    this:getPosition().y,
+    node:getPosition().y + 100 * node:getScale().y,
+    node:getPosition().y - 100 * node:getScale().y,
+    node:getPosition().y,
 }
 
 local function circleMotion()
@@ -48,6 +49,6 @@ my.speed = 100;
 -- will not keep calling itself until the window is left alone again
 function update(dt)
     flux.update(dt)
-    this:setPosition(my.position)
+    node:setPosition(my.position)
 end
 
