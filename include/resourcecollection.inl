@@ -14,7 +14,7 @@ const char* getTypeID(Identifier id)
     if (typeid(id) == typeid(ShaderID::none))
         return shader_names[static_cast<size_t>(id)];
     if (typeid(id) == typeid(TileSetID::none))
-        return shader_names[static_cast<size_t>(id)];
+        return tileset_names[static_cast<size_t>(id)];
 
     return "unknown type";
 }
