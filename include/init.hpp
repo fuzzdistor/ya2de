@@ -22,7 +22,7 @@ namespace Init
         Log::Config::setOption(configList, "filename",          "log.txt");
         Log::Config::setOption(configList, "filename_old",      "log.old.txt");
         Log::Config::setOption(configList, "max_startup_size",  "0");
-        Log::Config::setOption(configList, "max_size",          "10000");
+        Log::Config::setOption(configList, "max_size",          "100000");
         try
         {
             Log::Manager::configure(configList);
