@@ -63,7 +63,7 @@ public:
     void removeMarkedChildren();
 
     ScriptPtr getLuaState() const;
-    bool loadScriptFile(const std::string& filepath);
+    void loadScriptFile(const std::string& filepath);
 
     void setDebugInfo(bool debug);
 

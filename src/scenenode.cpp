@@ -66,14 +66,13 @@ void SceneNode::setLuaUsertype()
     //(*getLuaState())[usertype]["dettachChild"] = &SceneNode::dettachChild;
 }
 
-bool SceneNode::loadScriptFile(const std::string& filepath)
+void SceneNode::loadScriptFile(const std::string& filepath)
 {
     auto err =  m_script->script_file(filepath);
     if(err.valid())
     {
         Log::Logger log("SceneNode::loadScriptFile");
         log.info() << "Loaded lua script: \""<< filepath << '"';
-        return true;
     }
     throw (&err);
 };
