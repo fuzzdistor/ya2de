@@ -40,9 +40,10 @@ public:
         CollisionShape  = 1 << 7,   //128
     };
 
-    explicit SceneNode(Mask mask);
+    SceneNode();
+    SceneNode(Mask mask);
     virtual ~SceneNode();
-    
+
     void init();
     virtual void update(sf::Time dt);
 
@@ -86,10 +87,10 @@ protected:
     std::vector<UniPtr> m_children;
 
 private:
-    SceneNode* m_parent;
-    Mask m_mask;
-    bool m_debugFlag;
-    bool m_markedForDestruction;
+    SceneNode* m_parent {nullptr};
+    Mask m_mask {Mask::none};
+    bool m_debugFlag {false};
+    bool m_markedForDestruction {false};
     const ScriptPtr m_script;
 
     friend class NodeFactories;
@@ -99,15 +100,15 @@ bool	collision(const SceneNode& lhs, const SceneNode& rhs);
 float	distance(const SceneNode& lhs, const SceneNode& rhs);
 
 NLOHMANN_JSON_SERIALIZE_ENUM(SceneNode::Mask, {
-    { SceneNode::Mask::none, "none" }, 
-    { SceneNode::Mask::Player, "Player" }, 
-    { SceneNode::Mask::CollisionObject, "CollisionObject" }, 
-    { SceneNode::Mask::NonPlayable, "NonPlayable" }, 
-    { SceneNode::Mask::Enemy, "Enemy" }, 
-    { SceneNode::Mask::AreaSwitch, "AreaSwitch" }, 
-    { SceneNode::Mask::Background, "Background" }, 
-    { SceneNode::Mask::Trigger, "Trigger" }, 
-    { SceneNode::Mask::CollisionShape, "CollisionShape" }, 
+    { SceneNode::Mask::none, "none" },
+    { SceneNode::Mask::Player, "Player" },
+    { SceneNode::Mask::CollisionObject, "CollisionObject" },
+    { SceneNode::Mask::NonPlayable, "NonPlayable" },
+    { SceneNode::Mask::Enemy, "Enemy" },
+    { SceneNode::Mask::AreaSwitch, "AreaSwitch" },
+    { SceneNode::Mask::Background, "Background" },
+    { SceneNode::Mask::Trigger, "Trigger" },
+    { SceneNode::Mask::CollisionShape, "CollisionShape" },
 })
 
 #endif  // TEST_SCENENODE_HPP

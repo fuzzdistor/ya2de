@@ -32,12 +32,15 @@ void my_panic(sol::optional<std::string> maybe_msg) {
 	// When this function exits, Lua will exhibit default behavior and abort()
 }
 
+SceneNode::SceneNode()
+    : m_children()
+    , m_script(std::make_shared<sol::state>(sol::c_call<decltype(&my_panic), &my_panic>))
+{
+}
+
 SceneNode::SceneNode(SceneNode::Mask mask)
     : m_children()
-    , m_parent(nullptr)
     , m_mask(mask)
-    , m_debugFlag(false)
-    , m_markedForDestruction(false)
     , m_script(std::make_shared<sol::state>(sol::c_call<decltype(&my_panic), &my_panic>))
 {
 }
@@ -123,7 +126,7 @@ void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) const
     drawCurrent(target, states);
     drawChildren(target, states);
 
-    if(m_debugFlag) 
+    if(m_debugFlag)
     {
         drawBoundingRect(target, states);
         drawOrigin(target, states);
@@ -202,7 +205,7 @@ void SceneNode::attachChild(SceneNode::UniPtr node)
 
 SceneNode::UniPtr SceneNode::dettachChild(const SceneNode &node)
 {
-    auto found = std::find_if(m_children.begin(), m_children.end(), 
+    auto found = std::find_if(m_children.begin(), m_children.end(),
             [&](UniPtr& p) { return p.get() == &node; });
 
     assert(found != m_children.end());
@@ -228,7 +231,7 @@ void SceneNode::update(sf::Time dt)
     updateChildren(dt);
 }
 
-void SceneNode::updateCurrent(sf::Time dt) 
+void SceneNode::updateCurrent(sf::Time dt)
 {
     sol::protected_function lupdate(m_script->get<sol::function>("update"));
     auto presult = lupdate(dt.asSeconds());

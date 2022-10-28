@@ -38,6 +38,7 @@ NodeFactories::NodeFactories(const ResourcePack& resources)
     m_nodeComposition[NodeID::TileMapNode] = { NodeID::TileMapNode, NodeID::SceneNode };
     m_nodeComposition[NodeID::YSortNode] = { NodeID::YSortNode, NodeID::SceneNode };
     m_nodeComposition[NodeID::TextboxNode] = { NodeID::TextNode, NodeID::TextboxNode, NodeID::SceneNode };
+    m_nodeComposition[NodeID::SceneNode] = { NodeID::SceneNode };
 
     //////////////
     // SETTERS
@@ -82,7 +83,7 @@ NodeFactories::NodeFactories(const ResourcePack& resources)
             recipeNode->setSize(recipe["size"][0].get<float>(), recipe["size"][1].get<float>());
 
         if(chk.fieldType("fill_color", json::value_t::array))
-            recipeNode->setFillColor(sf::Color(recipe["fill_color"][0], recipe["fill_color"][1], recipe["fill_color"][2], recipe["fill_color"][3])); 
+            recipeNode->setFillColor(sf::Color(recipe["fill_color"][0], recipe["fill_color"][1], recipe["fill_color"][2], recipe["fill_color"][3]));
 
         if(chk.fieldType("enabled", json::value_t::boolean))
             recipeNode->m_enabled = recipe["enabled"].get<bool>();
@@ -193,7 +194,7 @@ NodeFactories::NodeFactories(const ResourcePack& resources)
 
 SceneNode::UniPtr NodeFactories::createSceneGraph(const ordered_json& sceneRecipe) const
 {
-    auto sceneGraph = std::make_unique<SceneNode>(SceneNode::Mask::none);
+    auto sceneGraph = std::make_unique<SceneNode>();
     for (auto& nodeRecipe : sceneRecipe)
     {
         m_logger.debug() << nodeRecipe.dump();
@@ -227,7 +228,7 @@ SceneNode::UniPtr NodeFactories::nodeConstructor(const ordered_json& recipe) con
 
     m_logger.debug() << "Constructing Node";
 
-    auto node = [&]() -> SceneNode::UniPtr 
+    auto node = [&]() -> SceneNode::UniPtr
     {
         switch (id)
         {
@@ -259,8 +260,8 @@ SceneNode::UniPtr NodeFactories::nodeConstructor(const ordered_json& recipe) con
                 return makeUniqueNode<TextboxNode>();
                 break;
             case NodeID::SceneNode:
-                m_logger.error() << "SceneNode is not a valid node!";
-                throw std::logic_error("SceneNode is not a valid node!");
+                return makeUniqueNode<SceneNode>();
+                break;
                 break;
             case NodeID::Invalid:
                 m_logger.error() << "Invalid node name passed!";
