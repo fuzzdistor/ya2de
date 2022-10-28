@@ -53,7 +53,7 @@ TileMapNode::TileMapNode(const std::string& jsonDataFilePath, const TileSet& til
     m_mapLayerInfo = mapData["layers"];
 
     // builds maps AND the textures. I'm planning to eventually
-    // separate the functions lauer with a texture update function 
+    // separate the functions lauer with a texture update function
     // that refreshes the textures after a runtime change by an event
     // or player interaction
     buildMap();
@@ -155,12 +155,12 @@ void TileMapNode::buildTextures()
             pixelWidth  = m_mapWidth * tilePixelUnit;
             pixelHeight = m_mapHeight * tilePixelUnit;
         }
-        
+
         layerImage.create(pixelWidth, pixelHeight, sf::Color::Transparent);
 
         for(const auto& tile: layer)
         {
-            // the build order for rectangular tilemaps is top to bottom 
+            // the build order for rectangular tilemaps is top to bottom
             // in columns from left to right. For isometric tilemaps it's from top to left
             // in tilted columns from top to right. An example here for square tilemaps can be found here:
             // https://cdn.discordapp.com/attachments/968305996491530244/1035165772529549402/TileOrder.gif
@@ -232,7 +232,7 @@ void TileMapNode::drawTileIndex(sf::RenderTarget& target, sf::RenderStates state
             {
                 x = static_cast<float>(m_mapHeight - tile.y + tile.x) * tileUnitSize + tileUnitSize / 2.f;
                 y = static_cast<float>(tile.x + tile.y) * tileUnitSize/2.f;
-            } 
+            }
             if(m_tileType == TileSet::Type::Square)
             {
                 x = static_cast<float>(tile.x) * tileUnitSize;
@@ -244,7 +244,7 @@ void TileMapNode::drawTileIndex(sf::RenderTarget& target, sf::RenderStates state
 
     for(auto& info : d_cachedPositions)
     {
-        d_text.setString(std::to_string(info.id)); 
+        d_text.setString(std::to_string(info.id));
         d_text.setPosition(std::floor(info.x * m_layerSprite.getScale().x), std::floor(info.y * m_layerSprite.getScale().x));
         target.draw(d_text, states);
     }

@@ -1,5 +1,3 @@
-print("hello!")
-
 local my = {}
 
 my.speed = 100;

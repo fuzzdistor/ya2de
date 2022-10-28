@@ -37,7 +37,7 @@ void SpriteNode::setLuaUsertype()
 }
 
 sf::FloatRect SpriteNode::getBoundingRect() const
-{ 
+{
     sf::FloatRect rect(m_sprite.getTextureRect());
     rect.top = -m_sprite.getOrigin().y;
     rect.left = -m_sprite.getOrigin().x;
@@ -52,7 +52,7 @@ void SpriteNode::setTexture(const sf::Texture& texture)
 
 void SpriteNode::setSpriteOrigin(const sf::Vector2f origin)
 {
-    setOrigin(origin.x, origin.y);
+    setSpriteOrigin(origin.x, origin.y);
 }
 
 void SpriteNode::setSpriteOrigin(const float x, const float y)
