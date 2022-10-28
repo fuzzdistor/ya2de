@@ -22,7 +22,7 @@ That will create the necessary files that Visual Studio needs to build the appli
 
 ### Configuring the project on Visual Studio
 
-Inside the build folder you can double click the `engine.sln` file for Visual Studio to open the solution.
+Inside the build folder you can double click the `ya2de.sln` file for Visual Studio to open the solution.
 
 Don't forget to set ya2de as the main solution.
 
@@ -38,17 +38,17 @@ On this menu you have to select "All Configurations" on the Configuration drop d
 
 Now on under the _"C/C+"_ properties you need to select _"Additional Include Directories"_ and add the path to the include directory for SFML (example: `"C:\SFML 2.5.1\include"`).
 
-In the same way under the _"Linker"_ properties you have to select _"Additional Library Directories"_ and add the path to the lib directory for SFML (example: `"C:\SFML 2.5.1\lib"`) and you also need to tell the linker where to find the lua library. This one is inside the lua-5.4.4 folder in extlibs (example: `"C:\Users\ThisUsersUsername\Downloads\engine\extlibs\lua-5.4.4"`).
+In the same way under the _"Linker"_ properties you have to select _"Additional Library Directories"_ and add the path to the lib directory for SFML (example: `"C:\SFML 2.5.1\lib"`) and you also need to tell the linker where to find the lua library. This one is inside the lua-5.4.4 folder in extlibs (example: `"C:\Users\ThisUsersUsername\Downloads\ya2de\extlibs\lua-5.4.4"`).
 
 After that you can hit _"Apply"_ and close the properties window.
 
 _**You can now build the project! 🎉**_
 
-**Please note** that the build is set as dynamically linked so don't forget to copy `sfml-graphics-d-2.dll`, `sfml-window-d-2.dll`, `sfml-system-d-2.dll`, `sfml-audio-d-2.dll` and `openal32.dll` from your `"SFML\bin"` folder and paste them into your executable folder or it will not be able to run. 
+> Please take into account that you should configure your debug/launch working directory to the root of the project or else the executable will not be able to find the "scripts", "media" and "data" folders.
 
-**Also** you should download the "media" and "luascripts" folders from the releases page in order for the example to run at all.
+> Also note that the build is set as dynamically linked so don't forget to copy `sfml-graphics-d-2.dll`, `sfml-window-d-2.dll`, `sfml-system-d-2.dll`, `sfml-audio-d-2.dll` and `openal32.dll` from your `"SFML\bin"` folder and paste them into your executable folder or it will not be able to run. 
 
-You can change the settings to your own accord in order to build a statically linked executable and not have to deal with packaging the dll files all the time, and also while you're at it set it with non-debug libraries to get the most performance out of it!!! (... you should also delete the 60 fps limiter line from the `game.cpp` file lol)
+> You can change the settings to your own accord in order to build a statically linked executable and not have to deal with packaging the dll files all the time, and also while you're at it set it with non-debug libraries to get the most performance out of it!
 
 ## Building with linux
 
@@ -63,23 +63,26 @@ sudo apt install libsfml-dev liblua5.4-dev
 Now clone the repository using
 
 ```sh 
-git clone git@github.com:fuzzdistor/engine.git 
+git clone git@github.com:fuzzdistor/ya2de.git 
 ```
 
-Once it finishes cloning jump inside the repo folder and create a new directory called `build` and cd into it. Here all you need to do is:
+Once it finishes cloning you can jump inside the repo folder and create a new directory called `build` where you can build the project like so:
 
 ```sh 
+cd ya2de
+mkdir build
+cd build
 cmake .. && make
 ```
 
-Remember to symlink the `media` and `luascripts` folders to the build directory in order for it to run. That is it! 🎉
+Remember to run the executable from the root of the project or you can symlink the `media`, `data` and `scripts` folders to the build directory. That is it! 🎉
 
 ### TO-DOs
 
-* Documenting the lua bindings in order to write scritps.
-* Handling player input.
-* Creating a dynamic scene builder.
-* So many many things...
+* Document the lua bindings.
+* Create a more robust player input handler.
+* Create a dynamic scene builder app so you don't have to write to a raw json file.
+* So many, many things...
 
 ### Contact
 
