@@ -101,10 +101,11 @@ std::unique_ptr<T> NodeFactories::makeUniqueNode() const
     sol::state* luavm = node->getLuaState().get();
 
     luavm->open_libraries(
-            sol::lib::base, 
-            sol::lib::math, 
+            sol::lib::base,
+            sol::lib::math,
             sol::lib::package,
             sol::lib::table,
+            sol::lib::coroutine,
             sol::lib::string);
 
     node->setLuaUsertype();
@@ -117,7 +118,7 @@ std::unique_ptr<T> NodeFactories::makeUniqueNode() const
             , sol::constructors<sf::Vector2f(float, float)>());
     vec2.set("x", &sf::Vector2f::x);
     vec2.set("y", &sf::Vector2f::y);
-    vec2.set_function("normalize", [](sf::Vector2f& v) 
+    vec2.set_function("normalize", [](sf::Vector2f& v)
             { //utility normalize function for Vector2
                 float m = v.x*v.x + v.y*v.y;
                 if (m != 0)

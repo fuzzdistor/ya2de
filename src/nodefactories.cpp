@@ -103,22 +103,22 @@ NodeFactories::NodeFactories(const ResourcePack& resources)
         Checker chk(recipe);
 
         if(chk.fieldType("fontid", json::value_t::string))
-            recipeNode->setFont(resources.fonts.get(recipe["fontid"].get<FontID>()));
+            recipeNode->m_text.setFont(resources.fonts.get(recipe["fontid"].get<FontID>()));
 
         if(chk.fieldType("character_size", json::value_t::number_unsigned))
-            recipeNode->setCharacterSize(recipe["character_size"].get<unsigned int>());
+            recipeNode->m_text.setCharacterSize(recipe["character_size"].get<unsigned int>());
 
         if(chk.fieldType("outline_thickness", json::value_t::number_float))
-            recipeNode->setOutlineThickness(recipe["outline_thickness"].get<float>());
+            recipeNode->m_text.setOutlineThickness(recipe["outline_thickness"].get<float>());
 
         if(chk.fieldType("string", json::value_t::string))
-            recipeNode->setString(recipe["string"].get_ref<const std::string&>());
+            recipeNode->m_text.setString(recipe["string"].get_ref<const std::string&>());
 
         if(chk.fieldType("fill_color", json::value_t::array))
-            recipeNode->setFillColor(sf::Color(recipe["fill_color"][0], recipe["fill_color"][1], recipe["fill_color"][2], recipe["fill_color"][3]));
+            recipeNode->m_text.setFillColor(sf::Color(recipe["fill_color"][0], recipe["fill_color"][1], recipe["fill_color"][2], recipe["fill_color"][3]));
 
         if(chk.fieldType("outline_color", json::value_t::array))
-            recipeNode->setOutlineColor(sf::Color(recipe["outline_color"][0], recipe["outline_color"][1], recipe["outline_color"][2], recipe["outline_color"][3]));
+            recipeNode->m_text.setOutlineColor(sf::Color(recipe["outline_color"][0], recipe["outline_color"][1], recipe["outline_color"][2], recipe["outline_color"][3]));
     };
     m_nodeSetters[NodeID::TextboxNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {

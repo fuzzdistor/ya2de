@@ -69,12 +69,11 @@ void SceneNode::setLuaUsertype()
 void SceneNode::loadScriptFile(const std::string& filepath)
 {
     auto err =  m_script->script_file(filepath);
-    if(err.valid())
-    {
-        Log::Logger log("SceneNode::loadScriptFile");
-        log.info() << "Loaded lua script: \""<< filepath << '"';
-    }
-    throw (&err);
+    if(!err.valid())
+        throw (&err);
+
+    Log::Logger log("SceneNode::loadScriptFile");
+    log.info() << "Loaded lua script: \""<< filepath << '"';
 };
 
 void SceneNode::checkSceneCollision(SceneNode& sceneGraph, std::set<Pair>& collisionPairs)

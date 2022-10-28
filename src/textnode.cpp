@@ -13,19 +13,11 @@ TextNode::TextNode()
     , m_soundbuffer()
 {
     auto luavm = getLuaState();
-    
-    luavm->open_libraries(sol::lib::coroutine);
 
     m_soundbuffer.loadFromFile("media/sounds/m_speech.wav");
     m_sound.setBuffer(m_soundbuffer);
     std::vector<int> v;
 }
-
-std::string TextNode::getString() const
-{
-    return m_text.getString();
-}
-
 
 void TextNode::setLuaUsertype()
 {
@@ -53,43 +45,8 @@ void TextNode::setLuaUsertype()
     SceneNode::setLuaUsertype();
 }
 
-void TextNode::setCharacterSize(unsigned int size)
-{
-    m_text.setCharacterSize(size);
-}
-
-void TextNode::setOutlineThickness(float thickness)
-{
-    m_text.setOutlineThickness(thickness);
-}
-
-void TextNode::setFillColor(const sf::Color color)
-{
-    m_text.setFillColor(color);
-}
-
-void TextNode::setOutlineColor(const sf::Color color)
-{
-    m_text.setOutlineColor(color);
-}
-
 float TextNode::getTextWidth() const
 {
     return m_text.getLocalBounds().width;
-}
-
-void TextNode::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const
-{
-    target.draw(m_text, states);
-}
-
-void TextNode::setString(std::string string)
-{
-    m_text.setString(string);
-}
-
-void TextNode::setFont(const sf::Font &font)
-{
-    m_text.setFont(font);
 }
 
