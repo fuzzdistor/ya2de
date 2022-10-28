@@ -84,7 +84,7 @@
   {
     "NodeType": "TextboxNode",
     "fontid": "Main",
-    "dialogue": ["Touching the orange box will make you spin!"],
+    "dialogue": ["Touching the orange box will make you spin! Touching the green one will make you travel to the next area."],
     "box_width": 600.0,
     "script": "scripts/textbox.lua"
   },
@@ -119,7 +119,8 @@
         "visible": true,
         "debug": true
       }
-    ]
+    ],
+    "script": "scripts/triggernode_test.lua"
   }
-     
+
 ]

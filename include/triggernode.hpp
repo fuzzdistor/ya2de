@@ -2,16 +2,17 @@
 #define TEST_TRIGGERNODE_HPP
 
 #include <LoggerCpp/Logger.h>
+#include <SFML/System/Time.hpp>
 #include <scenenode.hpp>
 #include <functional>
 
 class TriggerNode : public SceneNode
 {
 public:
-    typedef std::function<void(SceneNode*)> CallbackFn;
+    typedef std::function<void(SceneNode*, float dt)> CallbackFn;
     TriggerNode();
 
-    void applyCallbackTo(SceneNode* node);
+    void applyCallbackTo(SceneNode* node, const sf::Time& time);
 
 protected:
     virtual void setLuaUsertype() override;

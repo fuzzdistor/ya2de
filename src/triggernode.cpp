@@ -1,5 +1,6 @@
 #include "LoggerCpp/Logger.h"
 #include "scenenode.hpp"
+#include <SFML/System/Time.hpp>
 #include <algorithm>
 #include <triggernode.hpp>
 
@@ -9,7 +10,7 @@ TriggerNode::TriggerNode()
     , m_shapenode(nullptr)
     , m_callback(nullptr)
 {
-    m_callback = [&](SceneNode* otherNode)
+    m_callback = [&](SceneNode* otherNode, float)
     {
         // simple test callback that rotates other node and then gets removed
         otherNode->getLuaState()->set("triggercallback", true);
@@ -22,7 +23,7 @@ void TriggerNode::setLuaUsertype()
     auto usertype = getLuaState()->new_usertype<TriggerNode>("TriggerNode"
             , sol::base_classes, sol::bases<SceneNode>());
 
-    usertype["m_callback"] = &TriggerNode::m_callback;
+    usertype["callback"] = &TriggerNode::m_callback;
 
     SceneNode::setLuaUsertype();
 }
@@ -43,10 +44,11 @@ sf::FloatRect TriggerNode::getBoundingRect() const
     return m_shapenode->getBoundingRect();
 }
 
-void TriggerNode::applyCallbackTo(SceneNode* node)
+void TriggerNode::applyCallbackTo(SceneNode* node, const sf::Time& dt)
 {
     Log::Logger logger("TriggerNode::applyCallbackTo");
-    logger.info() << "Applying callback to colliding node";
-    m_callback(node);
+    logger.setLevel(Log::Log::eInfo);
+    logger.debug() << "Applying callback to colliding node";
+    m_callback(node, dt.asSeconds());
 }
 

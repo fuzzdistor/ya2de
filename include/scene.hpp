@@ -23,7 +23,7 @@ public:
     void update(sf::Time dt);
     void draw();
 
-    sf::FloatRect getViewBounds() const;		
+    sf::FloatRect getViewBounds() const;
     //CommandQueue& getCommandQueue();
     void setCurrentBattleFieldPosition(float lineY);
     void setWorldHeight(float height);
@@ -33,7 +33,7 @@ public:
 private:
     bool matchesMask(SceneNode::Pair& colliders, SceneNode::Mask mask1, SceneNode::Mask mask2);
     void loadResources();
-    void handleCollisions();
+    void handleCollisions(const sf::Time& dt);
     void updateSounds();
 
     void buildScene(const ordered_json& recipe);

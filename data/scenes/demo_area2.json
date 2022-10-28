@@ -30,9 +30,10 @@
     "fontid": "Main",
     "script": "scripts/textbox.lua",
     "dialogue": [
-        "This is a demo string that fits inside the textbox!",
+        "This is a demo string that fits inside the textbox! Pressing K will make it faster and pressing J will go to the next one!",
         "This is the second one!",
-        "This is the third one. Wow!"
+        "This is the third one. Wow!",
+        "This is the last one sadly... You can go back to the first area by touching the green box."
     ],
     "position": [
       -300,

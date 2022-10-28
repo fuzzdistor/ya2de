@@ -46,7 +46,7 @@ end
 
 function update(dt)
     if checkAction("action_b") then my.text_speed = 0.01 end
-    if checkAction("action_a") and not my.debounceflag then
+    if checkAction("action_a") and not my.debounceflag and coroutine.status(feedText) == "dead" then
         if node:nextLine() then
             my.text = node:getDialogueLine(node.current_line_index)
             feedText = coroutine.create(textFeeder)

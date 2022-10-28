@@ -58,7 +58,7 @@ void Scene::update(sf::Time dt)
 
     m_sceneGraph->update(dt);
 
-    handleCollisions();
+    handleCollisions(dt);
     m_sceneGraph->removeMarkedChildren();
 }
 
@@ -86,7 +86,7 @@ void Scene::loadResources()
     m_resources.tilesets.load(TileSetID::Iso, "media/tilemaps/isomap/isomap.txt");
 }
 
-void Scene::handleCollisions()
+void Scene::handleCollisions(const sf::Time& dt)
 {
     std::set<SceneNode::Pair> collisionPairs;
     m_sceneGraph->checkSceneCollision(*m_sceneGraph.get(), collisionPairs);
@@ -97,7 +97,7 @@ void Scene::handleCollisions()
         {
             auto player = static_cast<SpriteNode*>(pair.first);
             auto trigger = static_cast<TriggerNode*>(pair.second);
-            trigger->applyCallbackTo(player);
+            trigger->applyCallbackTo(player, dt);
         }
         if (matchesMask(pair, SceneNode::Mask::Player, SceneNode::Mask::AreaSwitch))
         {
@@ -118,13 +118,11 @@ bool Scene::matchesMask(SceneNode::Pair& colliders, SceneNode::Mask mask1, Scene
     // Make sure first pair entry has category type1 and second has type2
     if (checkMask1 & nodeMask1 && checkMask2 & nodeMask2)
     {
-        m_logger.info() << "mask hit!";
         return true;
     }
 
     if (checkMask1 & nodeMask2 && checkMask2 & nodeMask1)
     {
-        m_logger.info() << "mask hit!";
         std::swap(colliders.first, colliders.second);
         return true;
     }
@@ -136,13 +134,13 @@ void Scene::buildScene(const ordered_json& recipe)
 {
     m_logger.info() << "Building scene start";
 
-    // Clock for timing scene building. 
-    // NOTE: Scene building is *SEVERELY* impacted by the console writing 
-    // of debug messages. Different terminal emulators might yield different 
-    // build times and should not be compared between one another. 
-    // Ex: running on Windows git bash reported scene build times 10x faster 
-    // than cmd, which took up to 10 frames to finish the build. Maybe an 
-    // asynchronous log system might solve this, but "asynchronous log" 
+    // Clock for timing scene building.
+    // NOTE: Scene building is *SEVERELY* impacted by the console writing
+    // of debug messages. Different terminal emulators might yield different
+    // build times and should not be compared between one another.
+    // Ex: running on Windows git bash reported scene build times 10x faster
+    // than cmd, which took up to 10 frames to finish the build. Maybe an
+    // asynchronous log system might solve this, but "asynchronous log"
     // seems like a bad idea.
     sf::Clock sceneBuildTimer;
     sceneBuildTimer.restart();
