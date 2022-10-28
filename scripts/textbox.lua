@@ -10,7 +10,8 @@ local function textFeeder()
             end
             my.text = my.text:sub(1,i-last_space-1)..'\n'..my.text:sub(i-last_space+1)
         end
-        node:setString(my.text:sub(1,i))
+
+        node.text:setString(my.text:sub(1,i))
 
         node.sound:stop()
         if my.text:sub(i,i):match("%w") then
@@ -25,8 +26,8 @@ end
 function init()
     node:setScale(1, 1)
     node:setPosition(-300, 160)
-    node:setCharacterSize(24)
-    node:setOutlineThickness(3)
+    node.text:setCharacterSize(24)
+    node.text:setOutlineThickness(3)
 
     math.randomseed(19)
     my.text = node:getDialogueLine(0)

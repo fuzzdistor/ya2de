@@ -14,22 +14,16 @@ class TextNode : public SceneNode
 public:
     TextNode();
 
-    void setFont(const sf::Font& font);
     float getTextWidth() const;
-    void setCharacterSize(unsigned int size);
-    void setOutlineThickness(float thickness);
-    void setFillColor(const sf::Color color);
-    void setOutlineColor(const sf::Color color);
-    void setString(std::string string);
-    std::string getString() const;
 
 protected:
     virtual void setLuaUsertype() override;
 
+    sf::Text m_text;
+
 private:
     virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const override;
 
-    sf::Text m_text;
     sf::Sound m_sound;
     sf::SoundBuffer m_soundbuffer;
 

@@ -30,19 +30,33 @@ void TextNode::setLuaUsertype()
             , &sf::Sound::setPitch
             );
 
+
+    auto texttype = getLuaState()->new_usertype<sf::Text>("Text");
+
+    texttype["setCharacterSize"] = &sf::Text::setCharacterSize;
+    texttype["setFillColor"] = &sf::Text::setFillColor;
+    texttype["setOutlineColor"] = &sf::Text::setOutlineColor;
+    texttype["setOutlineThickness"] = &sf::Text::setOutlineThickness;
+    texttype["getString"] = [](const sf::Text& text)
+                { return std::string(text.getString()); };
+    texttype["setString"] = [](sf::Text& text, const std::string& string)
+                { text.setString(string); };
+    texttype["getBounds"] = &sf::Text::getLocalBounds;
+
+
     auto usertype = getLuaState()->new_usertype<TextNode>("TextNode"
             , sol::base_classes, sol::bases<SceneNode>());
 
     usertype["sound"] = &TextNode::m_sound;
-    usertype["setCharacterSize"] = &TextNode::setCharacterSize;
-    usertype["setFillColor"] = &TextNode::setFillColor;
-    usertype["setOutlineColor"] = &TextNode::setOutlineColor;
-    usertype["setOutlineThickness"] = &TextNode::setOutlineThickness;
-    usertype["setString"] = &TextNode::setString;
+    usertype["text"] = &TextNode::m_text;
     usertype["getTextWidth"] = &TextNode::getTextWidth;
-    usertype["getString"] = &TextNode::getString;
 
     SceneNode::setLuaUsertype();
+}
+
+void TextNode::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const
+{
+    target.draw(m_text, states);
 }
 
 float TextNode::getTextWidth() const
