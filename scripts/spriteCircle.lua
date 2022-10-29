@@ -2,7 +2,6 @@ local flux = require("scripts.lib.flux")
 
 local my = {}
 
-print(node:getPosition())
 my.position = node:getPosition()
 my.scale = Vector2:new(5,5)
 

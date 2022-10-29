@@ -10,6 +10,7 @@
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <nlohmann/json.hpp>
+#include <sol/forward.hpp>
 #include <sol/reference.hpp>
 #include <sol/sol.hpp>
 
@@ -92,6 +93,8 @@ private:
     bool m_debugFlag {false};
     bool m_markedForDestruction {false};
     const ScriptPtr m_script;
+
+    sol::protected_function l_update { sol::nil };
 
     friend class NodeFactories;
 };

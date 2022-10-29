@@ -19,6 +19,7 @@
 #include <memory>
 #include <cassert>
 #include <cmath>
+#include <sol/forward.hpp>
 #include <sol/wrapper.hpp>
 
 
@@ -74,6 +75,8 @@ void SceneNode::loadScriptFile(const std::string& filepath)
 
     Log::Logger log("SceneNode::loadScriptFile");
     log.info() << "Loaded lua script: \""<< filepath << '"';
+
+    l_update = m_script->get<sol::function>("update");
 };
 
 void SceneNode::checkSceneCollision(SceneNode& sceneGraph, std::set<Pair>& collisionPairs)
@@ -217,8 +220,16 @@ SceneNode::UniPtr SceneNode::dettachChild(const SceneNode &node)
 void SceneNode::init()
 {
     sol::protected_function linit(m_script->get<sol::function>("init"));
-    auto presult = linit();
-    //if (!presult.valid())
+
+    // if there is a init function then call it and check for
+    // errors. Throw if there are any errors.
+    if (linit != sol::nil)
+    {
+        auto presult = linit();
+        if (!presult.valid())
+            throw static_cast<sol::error>(presult);
+    }
+
     for(auto& child: m_children)
         child->init();
 }
@@ -231,9 +242,19 @@ void SceneNode::update(sf::Time dt)
 
 void SceneNode::updateCurrent(sf::Time dt)
 {
-    sol::protected_function lupdate(m_script->get<sol::function>("update"));
-    auto presult = lupdate(dt.asSeconds());
-    //if (!presult.valid())
+    // if "update" is not present do nothing
+    if (l_update == sol::nil)
+        return;
+
+    // check whether the update executed succesfully or there were
+    // errors. Throw if there were any.
+    auto presult = l_update(dt.asSeconds());
+    if(!presult.valid())
+    {
+        Log::Logger logger("Update Error");
+        logger.critic() << "There was an error in the update call";
+        throw static_cast<sol::error>(presult);
+    }
 }
 
 void SceneNode::updateChildren(sf::Time dt)
