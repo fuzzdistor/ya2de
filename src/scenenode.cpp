@@ -63,6 +63,7 @@ void SceneNode::setLuaUsertype()
     usertype["getRotation"] = &SceneNode::getRotation;
     usertype["getScale"] = &SceneNode::getScale;
     usertype["getPosition"] = &SceneNode::getPosition;
+    usertype["visible"] = &SceneNode::m_visible;
     //(*getLuaState())[usertype]["attachChild"] = &SceneNode::attachChild;
     //(*getLuaState())[usertype]["dettachChild"] = &SceneNode::dettachChild;
 }
@@ -124,10 +125,13 @@ sf::Transform SceneNode::getWorldTransform() const
 void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     states.transform *= getTransform();
-    drawCurrent(target, states);
+
+    if (m_visible)
+        drawCurrent(target, states);
+
     drawChildren(target, states);
 
-    if(m_debugFlag)
+    if (m_debugFlag)
     {
         drawBoundingRect(target, states);
         drawOrigin(target, states);

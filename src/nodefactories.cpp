@@ -87,9 +87,6 @@ NodeFactories::NodeFactories(const ResourcePack& resources)
 
         if(chk.fieldType("enabled", json::value_t::boolean))
             recipeNode->m_enabled = recipe["enabled"].get<bool>();
-
-        if(chk.fieldType("visible", json::value_t::boolean))
-            recipeNode->m_visible = recipe["visible"].get<bool>();
     };
     m_nodeSetters[NodeID::YSortNode] = [&](SceneNode*, const ordered_json&) -> void
     {
@@ -186,6 +183,9 @@ NodeFactories::NodeFactories(const ResourcePack& resources)
 
         if (chk.fieldType("mask", json::value_t::string))
             node->m_mask = recipe["mask"];
+
+        if(chk.fieldType("visible", json::value_t::boolean))
+            node->m_visible = recipe["visible"].get<bool>();
 
         if (chk.fieldType("script", json::value_t::string))
             node->loadScriptFile(recipe["script"].get_ref<const std::string&>());

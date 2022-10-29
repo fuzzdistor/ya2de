@@ -16,7 +16,6 @@ void ShapeNode::setLuaUsertype()
             , sol::base_classes, sol::bases<SceneNode>());
 
     usertype["enabled"] = &ShapeNode::m_enabled;
-    usertype["visible"] = &ShapeNode::m_visible;
     usertype["setFillColor"] = &ShapeNode::setFillColor;
     usertype["setSize"] = sol::overload(
             static_cast<void(ShapeNode::*)(sf::Vector2f const&)>(&ShapeNode::setSize)
@@ -59,7 +58,6 @@ sf::FloatRect ShapeNode::getBoundingRect() const
 
 void ShapeNode::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    if (m_visible)
         target.draw(m_shape, states);
 }
 

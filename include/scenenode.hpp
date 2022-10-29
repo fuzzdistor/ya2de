@@ -93,6 +93,7 @@ private:
     bool m_debugFlag {false};
     bool m_markedForDestruction {false};
     const ScriptPtr m_script;
+    bool m_visible {true};
 
     sol::protected_function l_update { sol::nil };
 
