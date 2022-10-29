@@ -4,12 +4,17 @@
     "data_filepath": "media/tilemaps/isomap/isomap.txt",
     "tilesetid": "Iso",
     "position": [
-      -300,
-      -120
+      0,
+      0
     ],
+    "origin": [
+      150,
+      0
+    ],
+    "debug": true,
     "scale": [
-      2,
-      2
+      1,
+      1
     ]
   },
   {
@@ -37,7 +42,7 @@
     ],
     "position": [
       -300,
-      100
+      160
     ],
     "box_width": 600.0
   },

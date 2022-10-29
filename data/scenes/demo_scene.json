@@ -13,16 +13,6 @@
     ]
   },
   {
-    "NodeType": "TileMapNode",
-    "data_filepath": "media/tilemaps/isomap/isomap.txt",
-    "tilesetid": "Iso",
-    "position": [
-      -100,
-      -120
-    ],
-    "debug": true
-  },
-  {
     "NodeType": "SoundPlayerNode",
     "filepath": "media/music/foolish_villain.ogg",
     "loop": true,
@@ -83,8 +73,9 @@
   },
   {
     "NodeType": "TextboxNode",
+    "position": [ -300, 140 ],
     "fontid": "Main",
-    "dialogue": ["Touching the orange box will make you spin! Touching the green one will make you travel to the next area."],
+    "dialogue": ["Touching the blue box will toggle your visibility and touching the orange box will make you spin! The green one will make you travel to the next area."],
     "box_width": 600.0,
     "script": "scripts/textbox.lua"
   },
@@ -107,6 +98,22 @@
   },
   {
     "NodeType": "TriggerNode",
+    "position": [ 0, -100 ],
+    "children": [
+      {
+        "NodeType": "ShapeNode",
+        "shape": 0,
+        "fill_color": [ 0, 0, 255, 128 ],
+        "size": [ 50, 50 ],
+        "mask": "CollisionShape",
+        "disable": false,
+        "visible": true
+      }
+    ],
+    "script": "scripts/trigger_togglevisibility.lua"
+  },
+  {
+    "NodeType": "TriggerNode",
     "position": [ 200, 0 ],
     "children": [
       {
@@ -116,8 +123,7 @@
         "size": [ 50, 50 ],
         "mask": "CollisionShape",
         "disable": false,
-        "visible": true,
-        "debug": true
+        "visible": true
       }
     ],
     "script": "scripts/triggernode_test.lua"

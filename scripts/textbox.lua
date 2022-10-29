@@ -14,7 +14,6 @@ local function textFeeder()
 
         node.text:setString(my.text:sub(1,i))
 
-        node.sound:stop()
         if my.text:sub(i,i):match("%w") then
             node.sound:setPitch(my.pitch - 0.1 + math.random()/10)
             node.sound:play()
@@ -26,7 +25,6 @@ end
 
 function init()
     node:setScale(1, 1)
-    node:setPosition(-300, 160)
     node.text:setCharacterSize(24)
     node.text:setOutlineThickness(3)
 
