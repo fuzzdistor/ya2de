@@ -2,6 +2,12 @@
 
 **YA2DE** is a *work in progress*, cross-platform, 2D game engine with lua scripting support built using [SFML](https://github.com/SFML/SFML) for window/graphics/audio/input management, [sol2](https://github.com/ThePhD/sol2) for binding Lua in C++, [nlohmann-json](https://github.com/nlohmann/json) for json parsing and of course [Lua](https://www.lua.org/) for scripting.
 
+The project comes with a simple demo for the current elements. There are plans for making adding resources like textures, sounds and tilesets part of the json and lua interface, but for now they are
+hardcoded into C++. You can still play with the lua functionallity using the [Lua API reference](doc/lua_api.md) and attaching the scripts to nodes
+inside the json scenes.
+
+Scene Builder tools are on the way!!
+
 ## Building with Windows
 
 ### Getting the necessary files
@@ -32,7 +38,7 @@ You **can delete** all the garbage build targets that cmake configured like "ALL
 
 You now need to tell the compiler where to find the SFML header files and tell the linker where to find the SFML libraries and the Lua library that comes with the repo.
 
-In order to do that, in Visual Studio with the project engine selected, you need to go to the _"Project"_ menu and select _"Properties"_. 
+In order to do that, in Visual Studio with the project engine selected, you need to go to the _"Project"_ menu and select _"Properties"_.
 
 On this menu you have to select "All Configurations" on the Configuration drop down menu.
 
@@ -46,7 +52,7 @@ _**You can now build the project! 🎉**_
 
 > Please take into account that you should configure your debug/launch working directory to the root of the project or else the executable will not be able to find the "scripts", "media" and "data" folders.
 
-> Also note that the build is set as dynamically linked so don't forget to copy `sfml-graphics-d-2.dll`, `sfml-window-d-2.dll`, `sfml-system-d-2.dll`, `sfml-audio-d-2.dll` and `openal32.dll` from your `"SFML\bin"` folder and paste them into your executable folder or it will not be able to run. 
+> Also note that the build is set as dynamically linked so don't forget to copy `sfml-graphics-d-2.dll`, `sfml-window-d-2.dll`, `sfml-system-d-2.dll`, `sfml-audio-d-2.dll` and `openal32.dll` from your `"SFML\bin"` folder and paste them into your executable folder or it will not be able to run.
 
 > You can change the settings to your own accord in order to build a statically linked executable and not have to deal with packaging the dll files all the time, and also while you're at it set it with non-debug libraries to get the most performance out of it!
 
@@ -56,19 +62,19 @@ Install `libsfml-dev` and `liblua5.4-dev` or their equivalents from your package
 
 #### Ubuntu based systems:
 
-``` sh 
-sudo apt install libsfml-dev liblua5.4-dev 
+``` sh
+sudo apt install libsfml-dev liblua5.4-dev
 ```
 
 Now clone the repository using
 
-```sh 
-git clone git@github.com:fuzzdistor/ya2de.git 
+```sh
+git clone git@github.com:fuzzdistor/ya2de.git
 ```
 
 Once it finishes cloning you can jump inside the repo folder and create a new directory called `build` where you can build the project like so:
 
-```sh 
+```sh
 cd ya2de
 mkdir build
 cd build
@@ -86,6 +92,6 @@ Remember to run the executable from the root of the project or you can symlink t
 
 ### Contact
 
-For any issue you can contact me via e-mail: fuzzdistor@gmail.com 
+For any issue you can contact me via e-mail: fuzzdistor@gmail.com
 or via twitter: [@fuzzdistor](https://www.twitter.com/fuzzdistor)
 
