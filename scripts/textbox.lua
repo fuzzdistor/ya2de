@@ -1,5 +1,6 @@
 local my = {}
 
+
 local function textFeeder()
     local i = 1
     while i <= #my.text do
@@ -30,7 +31,7 @@ function init()
     node.text:setOutlineThickness(3)
 
     math.randomseed(19)
-    my.text = node:getDialogueLine(0)
+    my.text = node:getDialogueLine(1) -- index is 1-based
 
     my.acc_time = 0
     my.deb_acc_time = 0
@@ -49,7 +50,7 @@ function update(dt)
     if checkAction("action_b") then my.text_speed = 0.01 end
     if checkAction("action_a") and not my.debounceflag and coroutine.status(feedText) == "dead" then
         if node:nextLine() then
-            my.text = node:getDialogueLine(node.current_line_index)
+            my.text = node:getDialogueLine(node:getCurrentLineIndex())
             feedText = coroutine.create(textFeeder)
             my.text_speed = 0.05
         end

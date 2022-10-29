@@ -9,7 +9,7 @@
 class TriggerNode : public SceneNode
 {
 public:
-    typedef std::function<void(SceneNode*, float dt)> CallbackFn;
+    typedef std::function<void(SceneNode*, float)> CallbackFn;
     TriggerNode();
 
     void applyCallbackTo(SceneNode* node, const sf::Time& time);

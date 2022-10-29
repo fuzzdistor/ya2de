@@ -1,3 +1,5 @@
+#include <sol/property.hpp>
+#include <sol/types.hpp>
 #include <textboxnode.hpp>
 
 TextboxNode::TextboxNode()
@@ -22,10 +24,12 @@ void TextboxNode::setLuaUsertype()
             , sol::base_classes, sol::bases<SceneNode, TextNode>());
 
     usertype["dialogue"] = &TextboxNode::m_dialogueLines;
-    usertype["nextLine"] = &TextboxNode::nextLine;
-    usertype["getDialogueLine"] = &TextboxNode::getDialogueLine;
-    usertype["current_line_index"] = &TextboxNode::m_currentLineIndex;
     usertype["box_width"] = &TextboxNode::m_textboxWidth;
+    usertype["nextLine"] = &TextboxNode::nextLine;
+    usertype["getCurrentLineIndex"] = [](const TextboxNode& node)
+        { return node.m_currentLineIndex + 1; }; // get a 1-based index result
+    usertype["getDialogueLine"] = [](const TextboxNode& node, size_t index)
+        { return node.getDialogueLine(index-1); }; // get a 1-based index result
 
     TextNode::setLuaUsertype();
 }
