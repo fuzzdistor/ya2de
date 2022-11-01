@@ -1,19 +1,11 @@
-#include <SFML/System/Thread.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
-#include <SFML/Window/VideoMode.hpp>
 #include <SFML/Graphics/Texture.hpp>
-#include <SFML/Window/WindowStyle.hpp>
 
 #include <game.hpp>
 
-#include <iostream>
 #include <memory>
-#include <stdexcept>
-#include <cassert>
-#include <cmath>
 #include <string>
-#include <string_view>
 
 
 Game::Game()
@@ -67,9 +59,6 @@ void Game::handleInput()
                         m_logger.info() << "Closed via Esc key";
                         m_window.close();
                         break;
-                    case sf::Keyboard::F2:
-                        m_captureThread.launch();
-                        break;
                     default:
                         break;
                 }
@@ -110,19 +99,14 @@ void Game::processStatistics()
         while(frameTimeCounter >= 1.f)
             frameTimeCounter -= 1.f;
 
-        const auto averageFrameTime = 
+        const auto averageFrameTime =
             d_statisticsFPS < 500 && d_statisticsFPS != 0 ?
                 std::to_string(static_cast<int>(1000/d_statisticsFPS)) + " ms" :
                 std::to_string(static_cast<int>(1000000/d_statisticsFPS)) + " us";
         d_statisticsText.setString(
-                std::to_string(d_statisticsFPS) + " FPS\n" 
+                std::to_string(d_statisticsFPS) + " FPS\n"
                 + averageFrameTime);
         d_statisticsFPS = 0;
     }
 }
 
-Game& Game::getInstance()
-{
-    static Game game;
-    return game;
-}

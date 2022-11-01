@@ -23,7 +23,8 @@ int main()
 
     try
     {
-        Game::getInstance().run();
+        Game game;
+        game.run();
     }
     catch (std::exception& e)
     {
