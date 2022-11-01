@@ -3,6 +3,8 @@
 [Ll]og.txt
 [Ll]og.old.txt
 [Rr]un.*
+[Cc]make-build*/
+.idea
 .vscode/
 .vs/
 compile_flags.txt
