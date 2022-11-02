@@ -1,5 +1,5 @@
-#ifndef TEST_MAIN_HPP
-#define TEST_MAIN_HPP
+#ifndef YA2DE_MAIN_HPP
+#define YA2DE_MAIN_HPP
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Clock.hpp>
@@ -46,4 +46,5 @@ private:
     unsigned int d_statisticsFPS {0};
 };
 
-#endif // TEST_MAIN_HPP
+#endif // YA2DE_MAIN_HPP
+

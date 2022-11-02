@@ -1,5 +1,5 @@
-#ifndef TEST_TILEMAPNODE_HPP
-#define TEST_TILEMAPNODE_HPP
+#ifndef YA2DE_TILEMAPNODE_HPP
+#define YA2DE_TILEMAPNODE_HPP
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -69,4 +69,5 @@ private:
     friend class NodeFactories;
 };
 
-#endif // TEST_TILEMAPNODE_HPP
+#endif // YA2DE_TILEMAPNODE_HPP
+

@@ -1,5 +1,5 @@
-#ifndef TEST_SCENEDATA_HPP
-#define TEST_SCENEDATA_HPP
+#ifndef YA2DE_SCENEDATA_HPP
+#define YA2DE_SCENEDATA_HPP
 
 #include <string>
 #include <map>
@@ -19,4 +19,5 @@ private:
     std::string m_mainSceneName {"invalid"};
 };
 
-#endif // TEST_SCENEDATA_HPP
+#endif // YA2DE_SCENEDATA_HPP
+

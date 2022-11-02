@@ -1,5 +1,5 @@
-#ifndef TEST_UTILS_HPP
-#define TEST_UTILS_HPP
+#ifndef YA2DE_UTILS_HPP
+#define YA2DE_UTILS_HPP
 
 #include <nlohmann/json.hpp>
 #include <LoggerCpp/LoggerCpp.h>
@@ -57,4 +57,5 @@ public:
         const ordered_json& json;
         Log::Logger logger{"JsonFieldChecker"};
 };
-#endif // TEST_UTILS_HPP
+#endif // YA2DE_UTILS_HPP
+

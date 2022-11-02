@@ -1,5 +1,5 @@
-#ifndef TEST_SHAPENODE_HPP
-#define TEST_SHAPENODE_HPP
+#ifndef YA2DE_SHAPENODE_HPP
+#define YA2DE_SHAPENODE_HPP
 
 #include "nlohmann/json.hpp"
 #include <SFML/Graphics/Drawable.hpp>
@@ -45,4 +45,5 @@ NLOHMANN_JSON_SERIALIZE_ENUM(ShapeNode::Shapes, {
     { ShapeNode::Shapes::Circle, "Circle" },
 })
 
-#endif // TEST_SHAPENODE_HPP
+#endif // YA2DE_SHAPENODE_HPP
+

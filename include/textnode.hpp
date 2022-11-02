@@ -1,5 +1,5 @@
-#ifndef TEST_TEXTNODE_HPP
-#define TEST_TEXTNODE_HPP
+#ifndef YA2DE_TEXTNODE_HPP
+#define YA2DE_TEXTNODE_HPP
 
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -30,5 +30,5 @@ private:
     friend class NodeFactories;
 };
 
-#endif //TEST_TEXTNODE_HPP
+#endif //YA2DE_TEXTNODE_HPP
 

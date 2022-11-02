@@ -1,5 +1,5 @@
-#ifndef TEST_RESOURCEIDENTIFIERS_HPP
-#define TEST_RESOURCEIDENTIFIERS_HPP
+#ifndef YA2DE_RESOURCEIDENTIFIERS_HPP
+#define YA2DE_RESOURCEIDENTIFIERS_HPP
 
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Texture.hpp>
@@ -55,7 +55,7 @@ enum class TextureID
 [[gnu::unused]] static const char* texture_names[] =
 {
     TEXTURE_IDS
-}; 
+};
 #undef X
 
 #define X(font, name) font,
@@ -146,4 +146,5 @@ typedef GenericResourceCollection<sf::Shader, ShaderID>				ShaderCollection;
 typedef GenericResourceCollection<sf::SoundBuffer, SoundEffectID>	SoundBufferCollection;
 typedef GenericResourceCollection<TileSet, TileSetID>	            TileSetCollection;
 
-#endif // TEST_RESOURCEIDENTIFIERS_HPP 
+#endif // YA2DE_RESOURCEIDENTIFIERS_HPP
+

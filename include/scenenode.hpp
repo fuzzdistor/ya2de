@@ -1,5 +1,5 @@
-#ifndef TEST_SCENENODE_HPP
-#define TEST_SCENENODE_HPP
+#ifndef YA2DE_SCENENODE_HPP
+#define YA2DE_SCENENODE_HPP
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Rect.hpp>
@@ -116,5 +116,5 @@ NLOHMANN_JSON_SERIALIZE_ENUM(SceneNode::Mask, {
     { SceneNode::Mask::CollisionShape, "CollisionShape" },
 })
 
-#endif  // TEST_SCENENODE_HPP
+#endif  // YA2DE_SCENENODE_HPP
 

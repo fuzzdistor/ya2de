@@ -1,5 +1,5 @@
-#ifndef TEST_SPRITENODE_HPP
-#define TEST_SPRITENODE_HPP
+#ifndef YA2DE_SPRITENODE_HPP
+#define YA2DE_SPRITENODE_HPP
 
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Texture.hpp>
@@ -30,4 +30,5 @@ private:
     friend class NodeFactories;
 };
 
-#endif // TEST_SPRITENODE_HPP
+#endif // YA2DE_SPRITENODE_HPP
+

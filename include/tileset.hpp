@@ -1,5 +1,5 @@
-#ifndef TEST_TILESET_HPP
-#define TEST_TILESET_HPP
+#ifndef YA2DE_TILESET_HPP
+#define YA2DE_TILESET_HPP
 
 #include "LoggerCpp/Logger.h"
 #include <SFML/Graphics/Texture.hpp>
@@ -48,5 +48,5 @@ private:
     Log::Logger m_logger{ "TileSet" };
 };
 
-#endif // TEST_TILESET_HPP
+#endif // YA2DE_TILESET_HPP
 

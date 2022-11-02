@@ -1,5 +1,5 @@
-#ifndef TEST_NODEFACTORIES_HPP
-#define TEST_NODEFACTORIES_HPP
+#ifndef YA2DE_NODEFACTORIES_HPP
+#define YA2DE_NODEFACTORIES_HPP
 
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Window/Keyboard.hpp>
@@ -153,4 +153,5 @@ std::unique_ptr<T> NodeFactories::makeUniqueNode() const
     return node;
 }
 
-#endif // TEST_NODEFACTORIES_HPP
+#endif // YA2DE_NODEFACTORIES_HPP
+

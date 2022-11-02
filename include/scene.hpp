@@ -1,5 +1,5 @@
-#ifndef TEST_SCENE_HPP
-#define TEST_SCENE_HPP
+#ifndef YA2DE_SCENE_HPP
+#define YA2DE_SCENE_HPP
 
 #include <LoggerCpp/Logger.h>
 #include <nlohmann/json_fwd.hpp>
@@ -50,4 +50,5 @@ private:
     Log::Logger m_logger{ "Scene" };
 };
 
-#endif // TEST_SCENE_HPP
+#endif // YA2DE_SCENE_HPP
+

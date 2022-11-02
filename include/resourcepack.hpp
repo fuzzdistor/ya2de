@@ -1,5 +1,5 @@
-#ifndef TEST_RESOURCEPACK_HPP
-#define TEST_RESOURCEPACK_HPP
+#ifndef YA2DE_RESOURCEPACK_HPP
+#define YA2DE_RESOURCEPACK_HPP
 
 #include <SFML/System/NonCopyable.hpp>
 #include <resourceidentifiers.hpp>
@@ -14,4 +14,5 @@ struct ResourcePack : private sf::NonCopyable
     ShaderCollection shaders;
 };
 
-#endif // TEST_RESOURCEPACK_HPP
+#endif // YA2DE_RESOURCEPACK_HPP
+

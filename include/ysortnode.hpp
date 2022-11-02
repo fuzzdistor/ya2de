@@ -1,5 +1,5 @@
-#ifndef TEST_YSORTNODE_HPP
-#define TEST_YSORTNODE_HPP
+#ifndef YA2DE_YSORTNODE_HPP
+#define YA2DE_YSORTNODE_HPP
 
 #include <SFML/System/Time.hpp>
 #include <scenenode.hpp>
@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <vector>
 
-class YSortNode : public SceneNode 
+class YSortNode : public SceneNode
 {
 public:
     YSortNode();
@@ -19,4 +19,5 @@ protected:
     friend class NodeFactories;
 };
 
-#endif // TEST_YSORTNODE_HPP
+#endif // YA2DE_YSORTNODE_HPP
+

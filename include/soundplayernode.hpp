@@ -1,5 +1,5 @@
-#ifndef TEST_SOUNDPLAYERNODE_HPP
-#define TEST_SOUNDPLAYERNODE_HPP
+#ifndef YA2DE_SOUNDPLAYERNODE_HPP
+#define YA2DE_SOUNDPLAYERNODE_HPP
 
 #include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Audio/Sound.hpp>
@@ -32,5 +32,6 @@ private:
 
     friend class NodeFactories;
 };
- 
-#endif  // TEST_SOUNDPLAYERNODE_HPP
+
+#endif  // YA2DE_SOUNDPLAYERNODE_HPP
+

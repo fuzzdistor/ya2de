@@ -1,5 +1,5 @@
-#ifndef TEST_INPUT_HPP
-#define TEST_INPUT_HPP
+#ifndef YA2DE_INPUT_HPP
+#define YA2DE_INPUT_HPP
 
 #include <SFML/Window/Keyboard.hpp>
 
@@ -7,9 +7,9 @@
 #include <string_view>
 
 
-namespace Input 
+namespace Input
 {
 };
 
-#endif // TEST_INPUT_HPP
+#endif // YA2DE_INPUT_HPP
 

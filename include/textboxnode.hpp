@@ -1,5 +1,5 @@
-#ifndef TEST_TEXTBOXNODE_HPP
-#define TEST_TEXTBOXNODE_HPP
+#ifndef YA2DE_TEXTBOXNODE_HPP
+#define YA2DE_TEXTBOXNODE_HPP
 
 #include "LoggerCpp/Logger.h"
 #include <SFML/Graphics/Font.hpp>
@@ -31,5 +31,5 @@ private:
     friend class NodeFactories;
 };
 
-#endif //TEST_TEXTBOXNODE_HPP
+#endif //YA2DE_TEXTBOXNODE_HPP
 

@@ -1,5 +1,5 @@
-#ifndef TEST_TRIGGERNODE_HPP
-#define TEST_TRIGGERNODE_HPP
+#ifndef YA2DE_TRIGGERNODE_HPP
+#define YA2DE_TRIGGERNODE_HPP
 
 #include <LoggerCpp/Logger.h>
 #include <SFML/System/Time.hpp>
@@ -27,4 +27,5 @@ private:
     friend class NodeFactories;
 };
 
-#endif // TEST_TRIGGERNODE_HPP
+#endif // YA2DE_TRIGGERNODE_HPP
+

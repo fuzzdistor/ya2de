@@ -1,5 +1,5 @@
-#ifndef TEST_INIT_HPP
-#define TEST_INIT_HPP
+#ifndef YA2DE_INIT_HPP
+#define YA2DE_INIT_HPP
 
 #define SOL_ALL_SAFETIES_ON 1
 
@@ -33,5 +33,6 @@ namespace Init
         }
     }
 }
- 
-#endif // TEST_INIT_HPP
+
+#endif // YA2DE_INIT_HPP
+

@@ -1,5 +1,5 @@
-#ifndef TEST_AREASWITCHERNODE_HPP
-#define TEST_AREASWITCHERNODE_HPP
+#ifndef YA2DE_AREASWITCHERNODE_HPP
+#define YA2DE_AREASWITCHERNODE_HPP
 
 #include <LoggerCpp/LoggerCpp.h>
 #include <scenenode.hpp>
@@ -24,4 +24,5 @@ private:
 };
 
 
-#endif // TEST_AREASWITCHERNODE_HPP
+#endif // YA2DE_AREASWITCHERNODE_HPP
+

@@ -1,5 +1,5 @@
-#ifndef TEST_RESOURCECOLLECTION_HPP
-#define TEST_RESOURCECOLLECTION_HPP
+#ifndef YA2DE_RESOURCECOLLECTION_HPP
+#define YA2DE_RESOURCECOLLECTION_HPP
 
 #include <map>
 #include <string>
@@ -24,9 +24,10 @@ public:
 
 private:
     void insertResource(Identifier id, std::unique_ptr<Resource> resource);
-    
+
     std::map<Identifier, std::unique_ptr<Resource>> m_resourceMap;
 };
 
 #include "resourcecollection.inl"
-#endif // TEST_RESOURCECOLLECTION_HPP
+#endif // YA2DE_RESOURCECOLLECTION_HPP
+
