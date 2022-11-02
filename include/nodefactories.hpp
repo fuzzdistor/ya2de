@@ -14,6 +14,7 @@
 #include <sol/forward.hpp>
 #include <sol/raii.hpp>
 #include <sol/sol.hpp>
+#include <sol/types.hpp>
 #include <string_view>
 
 
@@ -132,8 +133,11 @@ std::unique_ptr<T> NodeFactories::makeUniqueNode() const
     color["a"] = &sf::Color::a;
 
     // vector2 constructor
-    auto vec2 = luavm.template new_usertype<sf::Vector2f>("Vector2"
-            , sol::constructors<sf::Vector2f(float, float)>());
+    sol::usertype<sf::Vector2f> vec2 = luavm.template new_usertype<sf::Vector2f>("Vector2"
+            , sol::constructors<sf::Vector2f(float, float)>()
+            , sol::meta_function::multiplication
+            , [](sf::Vector2f& vec, float scalar)
+            { return vec*scalar; });
 
     // propierties + normalize function
     vec2.set("x", &sf::Vector2f::x);

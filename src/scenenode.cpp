@@ -21,6 +21,7 @@
 #include <cmath>
 #include <sol/forward.hpp>
 #include <sol/raii.hpp>
+#include <sol/variadic_args.hpp>
 #include <sol/wrapper.hpp>
 #include <string_view>
 
@@ -83,8 +84,8 @@ void SceneNode::setLuaUsertype()
     usertype["getScale"] = &SceneNode::getScale;
     usertype["getPosition"] = &SceneNode::getPosition;
     usertype["markForDestruction"] = &SceneNode::markForDestruction;
-    usertype["invoke"] = [](SceneNode& node, const char* function)
-        { node.getLuaState()[function](); };
+    usertype["invoke"] = [](SceneNode& node, const char* function, sol::variadic_args args)
+        { node.getLuaState()[function](args); };
     usertype["attachChild"] = [](SceneNode& node, UniPtr& uniptr)
         {
             std::cout << "node children size: " << node.m_children.size() << '\n';

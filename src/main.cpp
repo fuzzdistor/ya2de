@@ -25,13 +25,27 @@ int main()
     {
         Game game;
         game.run();
+        log.info() << "App Exit success";
     }
     catch (std::exception& e)
     {
         log.critic() << e.what();
+        log.info() << "App Exit after exception";
     }
-    log.info() << "App Exit";
-    log.info() << "Execution time: " << appClock.restart().asSeconds() << " seconds";
+
+    float executionTime = appClock.restart().asSeconds();
+
+    if (executionTime >= 60.f)
+    {
+        int minutes = static_cast<int>(executionTime) / 60;
+        executionTime -= static_cast<float>(minutes)*60.f;
+        log.info() << "Execution time: " << minutes << " min " << executionTime << " seconds";
+    }
+    else
+    {
+        log.info() << "Execution time: " << executionTime << " seconds";
+    }
+
     return 0;
 }
 
