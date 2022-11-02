@@ -68,12 +68,12 @@ TileMapNode::TileMapNode(const std::string& jsonDataFilePath, const TileSet& til
 
 void TileMapNode::setLuaUsertype()
 {
-    auto cell = getLuaState()->new_usertype<Cell<unsigned int>>("Cell");
+    auto cell = getLuaState().new_usertype<Cell<unsigned int>>("Cell");
     cell["x"] = &Cell<unsigned int>::x;
     cell["y"] = &Cell<unsigned int>::y;
     cell["id"] = &Cell<unsigned int>::id;
 
-    auto usertype = getLuaState()->new_usertype<TileMapNode>("TileMapNode"
+    auto usertype = getLuaState().new_usertype<TileMapNode>("TileMapNode"
             , sol::base_classes, sol::bases<SceneNode>());
 
     // TODO find a way to add this to the lua state
@@ -143,18 +143,19 @@ void TileMapNode::buildTextures()
     for(const auto& layer: m_tileMapLayers)
     {
         sf::Image layerImage;
-        unsigned int pixelWidth;
-        unsigned int pixelHeight;
-        if(m_tileType == TileSet::Type::Isometric)
-        {
-            pixelWidth  = (m_mapWidth + m_mapHeight) * tilePixelUnit;
-            pixelHeight = (m_mapHeight + m_mapWidth) * tilePixelUnit/2;
-        }
-        if(m_tileType == TileSet::Type::Square)
-        {
-            pixelWidth  = m_mapWidth * tilePixelUnit;
-            pixelHeight = m_mapHeight * tilePixelUnit;
-        }
+        const auto [pixelWidth, pixelHeight] = [&]() -> std::tuple<unsigned int, unsigned int> {
+            switch (m_tileType)
+            {
+                case TileSet::Type::Isometric:
+                    return { (m_mapWidth + m_mapHeight) * tilePixelUnit
+                        , (m_mapHeight + m_mapWidth) * tilePixelUnit/2 };
+
+                case TileSet::Type::Square:
+                    return { m_mapWidth * tilePixelUnit
+                        , m_mapHeight * tilePixelUnit };
+            }
+            throw std::logic_error("TileMapNode::buildTextures was passed an unhandled TileSet::Type");
+        }();
 
         layerImage.create(pixelWidth, pixelHeight, sf::Color::Transparent);
 

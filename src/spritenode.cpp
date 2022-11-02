@@ -7,6 +7,7 @@
 #include <sol/error.hpp>
 #include <sol/forward.hpp>
 #include <sol/inheritance.hpp>
+#include <sol/overload.hpp>
 #include <sol/sol.hpp>
 
 #include <spritenode.hpp>
@@ -30,8 +31,16 @@ SpriteNode::SpriteNode(const sf::Texture& texture)
 
 void SpriteNode::setLuaUsertype()
 {
-    auto usertype = getLuaState()->new_usertype<SpriteNode>("SpriteNode"
+    auto sprite = getLuaState().new_usertype<sf::Sprite>("Sprite"
+            , sol::no_constructor);
+
+    sprite["getColor"] = &sf::Sprite::getColor;
+    sprite["setColor"] = &sf::Sprite::setColor;
+
+    auto usertype = getLuaState().new_usertype<SpriteNode>("SpriteNode"
             , sol::base_classes, sol::bases<SceneNode>());
+
+    usertype["sprite"] = &SpriteNode::m_sprite;
 
     SceneNode::setLuaUsertype();
 }

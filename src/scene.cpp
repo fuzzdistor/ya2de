@@ -27,14 +27,12 @@
 
 Scene::Scene(sf::RenderTarget& outputTarget, ResourcePack& resources, const std::string& recipePath)
     : m_target(outputTarget)
-    , m_sceneTexture()
     , m_worldView(outputTarget.getDefaultView())
     , m_resources(resources)
     , m_sceneGraph(std::make_unique<SceneNode>(SceneNode::Mask::none))
     , m_viewStartPosition()
 {
     m_logger.debug() << "Constructing Scene Object";
-    m_sceneTexture.create(m_target.getSize().x, m_target.getSize().y);
 
     m_logger.debug() << "Going for the parse";
     ordered_json sceneRecipe = utils::jsonLoadFromFile(recipePath);
@@ -42,7 +40,7 @@ Scene::Scene(sf::RenderTarget& outputTarget, ResourcePack& resources, const std:
 
     loadResources();
     buildScene(sceneRecipe);
-    
+
     // call the init of every lua script in the scene
     m_sceneGraph->init();
 
@@ -102,7 +100,7 @@ void Scene::handleCollisions(const sf::Time& dt)
         if (matchesMask(pair, SceneNode::Mask::Player, SceneNode::Mask::AreaSwitch))
         {
             auto areaswitchernode = pair.second;
-            m_toArea = (*areaswitchernode->getLuaState())["node"]["destiny_area"];
+            m_toArea = areaswitchernode->getLuaState()["node"]["destiny_area"];
         }
     }
 }

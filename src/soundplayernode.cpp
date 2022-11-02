@@ -19,7 +19,7 @@ void SoundPlayerNode::setSoundSource(const sf::SoundBuffer& buffer)
 
 void SoundPlayerNode::setLuaUsertype()
 {
-    auto usertype = getLuaState()->new_usertype<SoundPlayerNode>("SoundPlayerNode"
+    auto usertype = getLuaState().new_usertype<SoundPlayerNode>("SoundPlayerNode"
             , sol::base_classes, sol::bases<SceneNode>());
 
     usertype["play"] = &SoundPlayerNode::play;

@@ -43,7 +43,7 @@ private:
     void buildTextures();
 
     template<typename T>
-    struct Cell 
+    struct Cell
     {
         // for some reason templates dont have a default constructor?
         Cell(T _x, T _y, size_t _id) : x(_x) , y(_y) , id(_id) {};

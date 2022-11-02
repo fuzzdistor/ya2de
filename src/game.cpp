@@ -29,6 +29,13 @@ Game::Game()
     m_window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 }
 
+Game::~Game()
+{
+    m_logger.debug() << "Game object destructor called!";
+    m_scene.reset();
+    m_logger.debug() << "Scene reset!";
+}
+
 void Game::run()
 {
     while(m_window.isOpen())

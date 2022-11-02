@@ -21,7 +21,7 @@ TextNode::TextNode()
 
 void TextNode::setLuaUsertype()
 {
-    getLuaState()->new_usertype<sf::Sound>("Sound"
+    getLuaState().new_usertype<sf::Sound>("Sound"
             , "play"
             , &sf::Sound::play
             , "stop"
@@ -31,7 +31,7 @@ void TextNode::setLuaUsertype()
             );
 
 
-    auto texttype = getLuaState()->new_usertype<sf::Text>("Text");
+    auto texttype = getLuaState().new_usertype<sf::Text>("Text");
 
     texttype["setCharacterSize"] = &sf::Text::setCharacterSize;
     texttype["setFillColor"] = &sf::Text::setFillColor;
@@ -44,7 +44,7 @@ void TextNode::setLuaUsertype()
     texttype["getBounds"] = &sf::Text::getLocalBounds;
 
 
-    auto usertype = getLuaState()->new_usertype<TextNode>("TextNode"
+    auto usertype = getLuaState().new_usertype<TextNode>("TextNode"
             , sol::base_classes, sol::bases<SceneNode>());
 
     usertype["sound"] = &TextNode::m_sound;

@@ -57,6 +57,23 @@
           32
         ],
         "script": "scripts/spriteCircle.lua"
+      },
+      {
+        "NodeType": "SpriteNode",
+        "textureid": "Player",
+        "debug": true,
+        "origin": [
+          16,
+          32
+        ],
+        "scale": [
+          3,
+          5
+        ],
+        "position": [
+          -100,
+          50
+        ]
       }
     ]
   },
@@ -75,7 +92,10 @@
     "NodeType": "TextboxNode",
     "position": [ -300, 140 ],
     "fontid": "Main",
-    "dialogue": ["Touching the blue box will toggle your visibility and touching the orange box will make you spin! The green one will make you travel to the next area."],
+    "dialogue": [
+      "Touching the blue box will toggle your visibility and touching the orange box will make you spin!",
+      "The green one will make you travel to the next area."
+    ],
     "box_width": 600.0,
     "script": "scripts/textbox.lua"
   },

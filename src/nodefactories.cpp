@@ -189,12 +189,15 @@ NodeFactories::NodeFactories(const ResourcePack& resources)
 
         if (chk.fieldType("script", json::value_t::string))
             node->loadScriptFile(recipe["script"].get_ref<const std::string&>());
+
+        if (chk.fieldType("logger_name", json::value_t::string))
+            node->m_logger = Log::Logger{recipe["logger_name"].get_ref<const std::string&>().c_str()};
     };
 }
 
-SceneNode::UniPtr NodeFactories::createSceneGraph(const ordered_json& sceneRecipe) const
+std::unique_ptr<SceneNode> NodeFactories::createSceneGraph(const ordered_json& sceneRecipe) const
 {
-    auto sceneGraph = std::make_unique<SceneNode>();
+    auto sceneGraph = std::make_unique<SceneNode>("SceneGraph");
     for (auto& nodeRecipe : sceneRecipe)
     {
         m_logger.debug() << nodeRecipe.dump();

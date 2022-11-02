@@ -2,7 +2,6 @@
 #define TEST_TEXTBOXNODE_HPP
 
 #include "LoggerCpp/Logger.h"
-#include "nodefactories.hpp"
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Audio/Sound.hpp>
@@ -16,7 +15,7 @@ class TextboxNode : public TextNode
 {
 public:
     TextboxNode();
-    
+
     std::string getDialogueLine(size_t index) const;
     bool nextLine();
 

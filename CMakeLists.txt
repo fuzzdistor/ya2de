@@ -3,12 +3,12 @@ project(YA2DE LANGUAGES CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS OFF)
 set(CMAKE_BUILD_TYPE DEBUG)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 find_package(SFML 2.5.1 REQUIRED graphics window system audio)
 
 include_directories(
-  "${CMAKE_SOURCE_DIR}/include" 
+  "${CMAKE_SOURCE_DIR}/include"
   "${CMAKE_SOURCE_DIR}/extlibs/LoggerCpp/include"
   "${CMAKE_SOURCE_DIR}/extlibs/Sol2/include"
   "${CMAKE_SOURCE_DIR}/extlibs/lua-5.4.4/src"
@@ -60,11 +60,11 @@ add_executable("${CMAKE_PROJECT_NAME}"
 )
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-    target_compile_options("${CMAKE_PROJECT_NAME}" PRIVATE 
-      -Wall 
-      -Wextra 
-      -Wshadow 
-      -Wnon-virtual-dtor 
+    target_compile_options("${CMAKE_PROJECT_NAME}" PRIVATE
+      -Wall
+      -Wextra
+      -Wshadow
+      -Wnon-virtual-dtor
       -pedantic
       -Wold-style-cast
       -Wcast-align

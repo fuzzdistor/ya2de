@@ -12,6 +12,7 @@
 #include <functional>
 #include <memory>
 #include <sol/forward.hpp>
+#include <sol/raii.hpp>
 #include <sol/sol.hpp>
 #include <string_view>
 
@@ -19,7 +20,7 @@
 using ordered_json = nlohmann::ordered_json;
 
 class SceneNode;
-class ResourcePack;
+struct ResourcePack;
 
 class NodeFactories
 {
@@ -98,9 +99,9 @@ std::unique_ptr<T> NodeFactories::makeUniqueNode() const
 {
     auto node = std::make_unique<T>();
 
-    sol::state* luavm = node->getLuaState().get();
+    sol::state_view luavm = node->getLuaState();
 
-    luavm->open_libraries(
+    luavm.open_libraries(
             sol::lib::base,
             sol::lib::math,
             sol::lib::package,
@@ -111,11 +112,30 @@ std::unique_ptr<T> NodeFactories::makeUniqueNode() const
     node->setLuaUsertype();
 
     // setting utility types
-    luavm->template new_usertype<sf::Color>("Color"
-            , sol::constructors<sf::Color(sf::Uint32)>());
+    auto color = luavm.template new_usertype<sf::Color>("Color"
+            , sol::no_constructor);
 
-    auto vec2 = luavm->template new_usertype<sf::Vector2f>("Vector2"
+    // color constructor
+    color["new"] = [](float r, float g, float b, float a) -> sf::Color
+    { return sf::Color(
+            static_cast<sf::Uint8>(r)
+            , static_cast<sf::Uint8>(g)
+            , static_cast<sf::Uint8>(b)
+            , static_cast<sf::Uint8>(a)
+            );
+    };
+
+    // color channels as propierties
+    color["r"] = &sf::Color::r;
+    color["g"] = &sf::Color::g;
+    color["b"] = &sf::Color::b;
+    color["a"] = &sf::Color::a;
+
+    // vector2 constructor
+    auto vec2 = luavm.template new_usertype<sf::Vector2f>("Vector2"
             , sol::constructors<sf::Vector2f(float, float)>());
+
+    // propierties + normalize function
     vec2.set("x", &sf::Vector2f::x);
     vec2.set("y", &sf::Vector2f::y);
     vec2.set_function("normalize", [](sf::Vector2f& v)
@@ -125,10 +145,10 @@ std::unique_ptr<T> NodeFactories::makeUniqueNode() const
                     v /= sqrtf(m);
             });
 
-    luavm->set_function("checkAction"
+    luavm.set_function("checkAction"
             , &checkAction);
 
-    node->m_script->set("node", node.get());
+    luavm.set("node", node.get());
 
     return node;
 }

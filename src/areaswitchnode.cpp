@@ -10,7 +10,7 @@ AreaSwitchNode::AreaSwitchNode()
 
 void AreaSwitchNode::setLuaUsertype()
 {
-    auto usertype = getLuaState()->new_usertype<AreaSwitchNode>("AreaSwitchNode"
+    auto usertype = getLuaState().new_usertype<AreaSwitchNode>("AreaSwitchNode"
             , sol::base_classes, sol::bases<SceneNode>());
 
     usertype["destiny_area"] = &AreaSwitchNode::m_destinyArea;

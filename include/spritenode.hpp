@@ -18,16 +18,12 @@ public:
     void setSpriteOrigin(const sf::Vector2f origin);
     void setSpriteOrigin(const float x, const float y);
 
-    // void setTextureRect(sf::FloatRect textureRect);
-
 protected:
     void setLuaUsertype() override;
 
 private:
-    //virtual void updateCurrent(sf::Time dt) override;
     virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
     virtual sf::FloatRect getBoundingRect() const override;
-
 
     sf::Sprite m_sprite;
 

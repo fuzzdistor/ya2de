@@ -1,11 +1,13 @@
 #ifndef TEST_UTILS_HPP
 #define TEST_UTILS_HPP
 
-#include <nlohmann/json.hpp> 
-#include <LoggerCpp/LoggerCpp.h> 
-#include <fstream> 
+#include <nlohmann/json.hpp>
+#include <LoggerCpp/LoggerCpp.h>
+#include <fstream>
 
-#define LOGGERLEVEL Log::Log::eDebug
+#ifndef LOGGERLEVEL
+#define LOGGERLEVEL eDebug
+#endif
 
 using json = nlohmann::json;
 using ordered_json = nlohmann::ordered_json;
@@ -25,10 +27,10 @@ namespace utils
 class Checker
 {
 public:
-    Checker(const ordered_json& _json) 
+    Checker(const ordered_json& _json)
         : json(_json)
     {
-        logger.setLevel(LOGGERLEVEL);
+        logger.setLevel(Log::Log::LOGGERLEVEL);
     }
 
     bool fieldType(std::string_view field, json::value_t value)
@@ -46,7 +48,7 @@ public:
                 throw std::logic_error("json is illformed");
             }
         }
-        else 
+        else
             logger.debug() << "field not found";
         return chk;
     }

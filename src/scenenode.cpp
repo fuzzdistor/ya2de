@@ -1,5 +1,4 @@
 #include <SFML/Graphics/CircleShape.hpp>
-#include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/PrimitiveType.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -12,6 +11,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <LoggerCpp/Logger.h>
 
+#include <ios>
 #include <scenenode.hpp>
 #include <input.hpp>
 
@@ -20,7 +20,9 @@
 #include <cassert>
 #include <cmath>
 #include <sol/forward.hpp>
+#include <sol/raii.hpp>
 #include <sol/wrapper.hpp>
+#include <string_view>
 
 
 void my_panic(sol::optional<std::string> maybe_msg) {
@@ -28,56 +30,80 @@ void my_panic(sol::optional<std::string> maybe_msg) {
 	logger.critic() << "Lua is in a panic state and will now abort() the application";
 	if (maybe_msg) {
 		const std::string& msg = maybe_msg.value();
-		logger.critic() << "\terror message: " << msg;
+		logger.critic() << "error message: " << msg;
 	}
 	// When this function exits, Lua will exhibit default behavior and abort()
 }
 
+SceneNode::SceneNode(const char* logChannelName)
+    : m_logger(logChannelName)
+    , m_script(sol::c_call<decltype(&my_panic), &my_panic>)
+{
+}
+
 SceneNode::SceneNode()
-    : m_children()
-    , m_script(std::make_shared<sol::state>(sol::c_call<decltype(&my_panic), &my_panic>))
+    : m_script(sol::c_call<decltype(&my_panic), &my_panic>)
 {
 }
 
 SceneNode::SceneNode(SceneNode::Mask mask)
     : m_children()
     , m_mask(mask)
-    , m_script(std::make_shared<sol::state>(sol::c_call<decltype(&my_panic), &my_panic>))
+    , m_script(sol::c_call<decltype(&my_panic), &my_panic>)
 {
 }
 
 SceneNode::~SceneNode()
 {
+    sol::protected_function lend(m_script.get<sol::function>("end"));
+
+    // if there is an init function then call it and check for
+    // errors. Throw if there are any errors.
+    if (lend != sol::nil)
+    {
+        auto presult = lend();
+        if (!presult.valid())
+            m_logger.critic() << "end error encountered! message: " << sol::error(presult).what();
+    }
 }
 
 void SceneNode::setLuaUsertype()
 {
-    auto usertype = getLuaState()->new_usertype<SceneNode>("SceneNode");
+    auto usertype = getLuaState().new_usertype<SceneNode>("SceneNode"
+            , sol::factories(std::make_unique<SceneNode>));
     usertype["move"] = static_cast<void(SceneNode::*)(float, float)>(&SceneNode::move);
     usertype["setPosition"] = sol::overload(
                 static_cast<void(SceneNode::*)(sf::Vector2f const&)>(&SceneNode::setPosition)
                 , static_cast<void(SceneNode::*)(float, float)>(&SceneNode::setPosition));
     usertype["setScale"] = static_cast<void(SceneNode::*)(float, float)>(&SceneNode::setScale);
     usertype["rotate"] = &SceneNode::rotate;
+    usertype["visible"] = &SceneNode::m_visible;
     usertype["setRotation"] = &SceneNode::setRotation;
     usertype["getRotation"] = &SceneNode::getRotation;
     usertype["getScale"] = &SceneNode::getScale;
     usertype["getPosition"] = &SceneNode::getPosition;
-    usertype["visible"] = &SceneNode::m_visible;
-    //(*getLuaState())[usertype]["attachChild"] = &SceneNode::attachChild;
-    //(*getLuaState())[usertype]["dettachChild"] = &SceneNode::dettachChild;
+    usertype["markForDestruction"] = &SceneNode::markForDestruction;
+    usertype["invoke"] = [](SceneNode& node, const char* function)
+        { node.getLuaState()[function](); };
+    usertype["attachChild"] = [](SceneNode& node, UniPtr& uniptr)
+        {
+            std::cout << "node children size: " << node.m_children.size() << '\n';
+            node.attachChild(std::move(uniptr));
+            std::cout << "node children size: " << node.m_children.size() << std::endl;
+        };
+    usertype["dettachChild"] = &SceneNode::dettachChild;
 }
 
 void SceneNode::loadScriptFile(const std::string& filepath)
 {
-    auto err =  m_script->script_file(filepath);
+    auto err =  m_script.script_file(filepath);
     if(!err.valid())
         throw (&err);
 
     Log::Logger log("SceneNode::loadScriptFile");
     log.info() << "Loaded lua script: \""<< filepath << '"';
 
-    l_update = m_script->get<sol::function>("update");
+    l_update = m_script.get<sol::function>("update");
 };
 
 void SceneNode::checkSceneCollision(SceneNode& sceneGraph, std::set<Pair>& collisionPairs)
@@ -90,7 +116,9 @@ void SceneNode::checkSceneCollision(SceneNode& sceneGraph, std::set<Pair>& colli
 
 void SceneNode::checkNodeCollision(SceneNode& node, std::set<Pair>& collisionPairs)
 {
-	if (this != &node && collision(*this, node) && !isMarkedForDestruction() && !node.isMarkedForDestruction())
+    if (node.m_mask != Mask::Player)
+        return;
+    if (this != &node && collision(*this, node) && !isMarkedForDestruction() && !node.isMarkedForDestruction())
 		collisionPairs.insert(std::minmax(this, &node));
 
 	for(auto& child: m_children)
@@ -102,7 +130,7 @@ bool SceneNode::isMarkedForDestruction() const
     return m_markedForDestruction;
 }
 
-SceneNode::ScriptPtr SceneNode::getLuaState() const
+sol::state_view SceneNode::getLuaState() const
 {
     return m_script;
 }
@@ -223,15 +251,15 @@ SceneNode::UniPtr SceneNode::dettachChild(const SceneNode &node)
 
 void SceneNode::init()
 {
-    sol::protected_function linit(m_script->get<sol::function>("init"));
+    sol::protected_function linit(m_script.get<sol::function>("init"));
 
-    // if there is a init function then call it and check for
+    // if there is an init function then call it and check for
     // errors. Throw if there are any errors.
     if (linit != sol::nil)
     {
         auto presult = linit();
         if (!presult.valid())
-            throw static_cast<sol::error>(presult);
+            throw sol::error(presult);
     }
 
     for(auto& child: m_children)
@@ -250,14 +278,14 @@ void SceneNode::updateCurrent(sf::Time dt)
     if (l_update == sol::nil)
         return;
 
-    // check whether the update executed succesfully or there were
+    // check whether the update executed successfully or there were
     // errors. Throw if there were any.
     auto presult = l_update(dt.asSeconds());
     if(!presult.valid())
     {
         Log::Logger logger("Update Error");
-        logger.critic() << "There was an error in the update call";
-        throw static_cast<sol::error>(presult);
+        logger.critic() << "There was an error in the Lua update call";
+        throw sol::error(presult);
     }
 }
 
@@ -269,7 +297,13 @@ void SceneNode::updateChildren(sf::Time dt)
 
 bool collision(const SceneNode& lhs, const SceneNode& rhs)
 {
-	return lhs.getBoundingRect().intersects(rhs.getBoundingRect());
+    auto lhs_rect = lhs.getBoundingRect();
+    auto rhs_rect = rhs.getBoundingRect();
+
+    if (lhs_rect.height == 0 or lhs_rect.width == 0 or rhs_rect.height == 0 or rhs_rect.width == 0)
+        return false;
+
+    return lhs_rect.intersects(rhs_rect);
 }
 
 float length(sf::Vector2f vector)
@@ -290,7 +324,9 @@ void SceneNode::removeMarkedChildren()
 {
 	// Remove all children which request so
 	auto firstMarked = std::remove_if(m_children.begin(), m_children.end(), std::mem_fn(&SceneNode::isMarkedForDestruction));
-	m_children.erase(firstMarked, m_children.end());
+
+
+    m_children.erase(firstMarked, m_children.end());
 
 	// Call function recursively for all remaining children
 	std::for_each(m_children.begin(), m_children.end(), std::mem_fn(&SceneNode::removeMarkedChildren));

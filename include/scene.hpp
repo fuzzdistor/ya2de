@@ -2,8 +2,7 @@
 #define TEST_SCENE_HPP
 
 #include <LoggerCpp/Logger.h>
-#include <resourcepack.hpp>
-#include <nodefactories.hpp>
+#include <nlohmann/json_fwd.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Texture.hpp>
@@ -13,7 +12,10 @@
 
 #include <resourcecollection.hpp>
 #include <resourceidentifiers.hpp>
+#include <resourcepack.hpp>
 #include <scenenode.hpp>
+
+using ordered_json = nlohmann::ordered_json;
 
 
 class Scene : private sf::NonCopyable
@@ -24,9 +26,6 @@ public:
     void draw();
 
     sf::FloatRect getViewBounds() const;
-    //CommandQueue& getCommandQueue();
-    void setCurrentBattleFieldPosition(float lineY);
-    void setWorldHeight(float height);
     bool requestsSceneChange() const;
     const std::string& getRequestedScene() const;
 
@@ -35,20 +34,18 @@ private:
     void loadResources();
     void handleCollisions(const sf::Time& dt);
     void updateSounds();
+    bool isPlayerAlive();
 
     void buildScene(const ordered_json& recipe);
     void destroyEntitiesOutsideView();
 
     sf::RenderTarget& m_target;
-    sf::RenderTexture m_sceneTexture;
     sf::View m_worldView;
     ResourcePack& m_resources;
     std::string m_toArea{};
-    //SoundPlayer& m_sounds;
 
     SceneNode::UniPtr m_sceneGraph;
     sf::Vector2f m_viewStartPosition;
-    //CommandQueue m_commandQueue;
 
     Log::Logger m_logger{ "Scene" };
 };

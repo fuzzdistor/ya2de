@@ -14,6 +14,8 @@ local function textFeeder()
 
         node.text:setString(my.text:sub(1,i))
 
+        node.sound:stop()
+
         if my.text:sub(i,i):match("%w") then
             node.sound:setPitch(my.pitch - 0.1 + math.random()/10)
             node.sound:play()
@@ -33,7 +35,7 @@ function init()
 
     my.acc_time = 0
     my.deb_acc_time = 0
-    my.text_speed = 0.05
+    my.text_speed = 0.04
 
     my.pitch = 1
 

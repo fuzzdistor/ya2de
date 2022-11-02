@@ -12,14 +12,14 @@ void YSortNode::update(sf::Time dt)
     SceneNode::update(dt);
 
     // And then sort acording to y value of updated children
-    std::sort(m_children.begin(), m_children.end(), 
+    std::sort(m_children.begin(), m_children.end(),
             [&](const auto& lhs, const auto& rhs)
             { return lhs->getPosition().y < rhs->getPosition().y; });
 }
 
 void YSortNode::setLuaUsertype()
 {
-    auto usertype = getLuaState()->new_usertype<YSortNode>("YSortNode"
+    auto usertype = getLuaState().new_usertype<YSortNode>("YSortNode"
             , sol::base_classes, sol::bases<SceneNode>());
 
     SceneNode::setLuaUsertype();

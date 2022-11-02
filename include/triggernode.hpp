@@ -21,9 +21,8 @@ private:
     sf::FloatRect getBoundingRect() const override;
 
     mutable SceneNode* m_shapenode;
+    mutable bool m_needsUpdate { true };
     CallbackFn m_callback;
-
-    Log::Logger m_logger{ "TriggerNode" };
 
     friend class NodeFactories;
 };

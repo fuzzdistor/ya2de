@@ -20,7 +20,7 @@ bool TextboxNode::nextLine()
 
 void TextboxNode::setLuaUsertype()
 {
-    auto usertype = getLuaState()->new_usertype<TextboxNode>("TextboxNode"
+    auto usertype = getLuaState().new_usertype<TextboxNode>("TextboxNode"
             , sol::base_classes, sol::bases<SceneNode, TextNode>());
 
     usertype["dialogue"] = &TextboxNode::m_dialogueLines;

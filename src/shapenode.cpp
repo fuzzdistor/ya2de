@@ -12,7 +12,7 @@ ShapeNode::ShapeNode()
 
 void ShapeNode::setLuaUsertype()
 {
-    auto usertype = getLuaState()->new_usertype<ShapeNode>("ShapeNode"
+    auto usertype = getLuaState().new_usertype<ShapeNode>("ShapeNode"
             , sol::base_classes, sol::bases<SceneNode>());
 
     usertype["enabled"] = &ShapeNode::m_enabled;
