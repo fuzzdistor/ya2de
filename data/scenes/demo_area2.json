@@ -48,7 +48,7 @@
   },
   {
     "NodeType": "SpriteNode",
-    "textureid": "Player",
+    "textureid": "Test",
     "position": [
       -200,
       -100
@@ -72,7 +72,7 @@
       },
       {
         "NodeType": "SpriteNode",
-        "textureid": "Player",
+        "textureid": "Test",
         "debug": true,
         "origin": [
           16,
@@ -84,7 +84,7 @@
       },
       {
         "NodeType": "SpriteNode",
-        "textureid": "Player",
+        "textureid": "Test",
         "debug": true,
         "origin": [
           16,
@@ -96,7 +96,7 @@
       },
       {
         "NodeType": "SpriteNode",
-        "textureid": "Player",
+        "textureid": "Test",
         "debug": true,
         "origin": [
           16,
@@ -107,7 +107,7 @@
       },
       {
         "NodeType": "SpriteNode",
-        "textureid": "Player",
+        "textureid": "Test",
         "debug": true,
         "origin": [
           16,

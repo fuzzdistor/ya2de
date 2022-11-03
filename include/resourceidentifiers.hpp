@@ -15,6 +15,7 @@ X(none, "TextureID::none") \
 X(Background, "TextureID::Background") \
 X(BackgroundIso, "TextureID::BackgroundIso") \
 X(BackgroundRoom, "TextureID::BackgroundRoom") \
+X(Test, "TextureID::Test") \
 X(Player, "TextureID::Player") \
 
 #define SHADER_IDS \
@@ -118,6 +119,7 @@ enum class TileSetID
 NLOHMANN_JSON_SERIALIZE_ENUM(TextureID,
 {
     { TextureID::Player, "Player" },
+    { TextureID::Test, "Test" },
     { TextureID::Background, "Background" },
     { TextureID::BackgroundIso, "BackgroundIso" },
     { TextureID::BackgroundRoom, "BackgroundRoom" },

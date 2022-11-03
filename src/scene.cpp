@@ -79,7 +79,8 @@ const std::string& Scene::getRequestedScene() const
 void Scene::loadResources()
 {
     m_resources.fonts.load(FontID::Main, "media/fonts/MesloLGS NF Regular.ttf");
-    m_resources.textures.load(TextureID::Player, "media/textures/test.png");
+    m_resources.textures.load(TextureID::Player, "media/textures/spritesheet.png");
+    m_resources.textures.load(TextureID::Test, "media/textures/test.png");
     m_resources.tilesets.load(TileSetID::Room, "media/tilemaps/room/room.txt");
     m_resources.tilesets.load(TileSetID::Iso, "media/tilemaps/isomap/isomap.txt");
 }

@@ -12,11 +12,8 @@ TextNode::TextNode()
     , m_sound()
     , m_soundbuffer()
 {
-    auto luavm = getLuaState();
-
     m_soundbuffer.loadFromFile("media/sounds/m_speech.wav");
     m_sound.setBuffer(m_soundbuffer);
-    std::vector<int> v;
 }
 
 void TextNode::setLuaUsertype()

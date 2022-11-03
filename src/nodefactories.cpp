@@ -52,6 +52,10 @@ NodeFactories::NodeFactories(const ResourcePack& resources)
 
         if(chk.fieldType("textureid", json::value_t::string))
             recipeNode->setTexture(resources.textures.get(recipe["textureid"].get<TextureID>()));
+
+        if(chk.fieldType("frameinfo", json::value_t::array))
+            recipeNode->setAnimationInfo(recipe["frameinfo"]["hframes"]
+                    , recipe["frameinfo"]["vframes"], recipe["frameinfo"]["info"]);
     };
     m_nodeSetters[NodeID::TileMapNode] = [&](SceneNode* node, const ordered_json& recipe) -> void
     {

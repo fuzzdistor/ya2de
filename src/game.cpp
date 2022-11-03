@@ -83,7 +83,6 @@ void Game::update()
     m_scene->update(m_frametime);
     if (m_scene->requestsSceneChange())
         m_scene = std::make_unique<Scene>(m_window, m_resources, m_sceneData.getSceneDataPath(m_scene->getRequestedScene()));
-
 }
 
 void Game::render()
