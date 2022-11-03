@@ -5,7 +5,25 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS OFF)
 set(CMAKE_BUILD_TYPE DEBUG)
 set(CMAKE_CXX_STANDARD 20)
 
-find_package(SFML 2.5.1 REQUIRED graphics window system audio)
+
+#find_package(SFML 2.5.1 REQUIRED graphics window system audio)
+# Get SFML
+
+include(FetchContent)
+
+set(SFML_VERSION "2.5.x")
+
+FetchContent_Declare(
+    sfml
+    GIT_REPOSITORY "https://github.com/SFML/SFML.git"
+    GIT_TAG        "${SFML_VERSION}"
+)
+#set(BUILD_SHARED_LIBS OFF)
+set(SFML_BUILD_EXAMPLES OFF)
+set(SFML_BUILD_DOC OFF)
+option(SFML_BUILD_AUDIO "Build audio" OFF)
+option(SFML_BUILD_NETWORK "Build network" OFF)
+FetchContent_MakeAvailable(sfml)
 
 include_directories(
   "${CMAKE_SOURCE_DIR}/include"
