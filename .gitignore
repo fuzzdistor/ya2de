@@ -1,11 +1,3 @@
-[Bb]uild/
-[Nn]otes/
-[Ll]og.txt
-[Ll]og.old.txt
-[Rr]un.*
-[Cc]make-build*/
+[Cc]make-build-*
+[Aa]ssets
 .idea
-.vscode/
-.vs/
-compile_flags.txt
-
