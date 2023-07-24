@@ -1,8 +1,8 @@
-#include <SFML/Graphics/Rect.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/CircleShape.hpp>
-#include <SFML/System/Vector2.hpp>
-#include <SFML/System/Time.hpp>
+#include "SFML/Graphics/Rect.hpp"
+#include "SFML/Graphics/Sprite.hpp"
+#include "SFML/Graphics/CircleShape.hpp"
+#include "SFML/System/Vector2.hpp"
+#include "SFML/System/Time.hpp"
 #include <LoggerCpp/Logger.h>
 #include <sol/error.hpp>
 #include <sol/forward.hpp>

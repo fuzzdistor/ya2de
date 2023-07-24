@@ -1,8 +1,8 @@
-#include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/Graphics/CircleShape.hpp>
-#include <SFML/System/Clock.hpp>
-#include <SFML/System/Vector2.hpp>
-#include <LoggerCpp/LoggerCpp.h>
+#include "SFML/Graphics/RenderTarget.hpp"
+#include "SFML/Graphics/CircleShape.hpp"
+#include "SFML/System/Clock.hpp"
+#include "SFML/System/Vector2.hpp"
+#include "LoggerCpp/LoggerCpp.h"
 #include <sol/sol.hpp>
 
 #include <resourceidentifiers.hpp>

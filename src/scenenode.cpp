@@ -64,7 +64,7 @@ SceneNode::~SceneNode()
     {
         auto presult = lend();
         if (!presult.valid())
-            m_logger.critic() << "end error encountered! message: " << sol::error(presult).what();
+            m_logger.critic() << "end error encountered! message: " << "sol error";//sol::error(presult).what();
     }
 }
 
@@ -260,7 +260,7 @@ void SceneNode::init()
     {
         auto presult = linit();
         if (!presult.valid())
-            throw sol::error(presult);
+            throw; //sol::error(presult);
     }
 
     for(auto& child: m_children)
@@ -286,7 +286,7 @@ void SceneNode::updateCurrent(sf::Time dt)
     {
         Log::Logger logger("Update Error");
         logger.critic() << "There was an error in the Lua update call";
-        throw sol::error(presult);
+        throw; //sol::error(presult);
     }
 }
 

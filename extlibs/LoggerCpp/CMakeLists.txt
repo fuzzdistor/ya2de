@@ -1,4 +1,4 @@
-add_library (LoggerCpp 
+add_library (LoggerCpp STATIC
  include/LoggerCpp/Channel.h
  include/LoggerCpp/Config.h
  include/LoggerCpp/DateTime.h

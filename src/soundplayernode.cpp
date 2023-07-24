@@ -1,4 +1,4 @@
-#include <SFML/Audio/SoundBuffer.hpp>
+#include "SFML/Audio/SoundBuffer.hpp"
 
 #include <soundplayernode.hpp>
 #include <scenenode.hpp>

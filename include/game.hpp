@@ -1,11 +1,11 @@
 #ifndef YA2DE_MAIN_HPP
 #define YA2DE_MAIN_HPP
 
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/System/Clock.hpp>
-#include <SFML/System/Time.hpp>
-#include <SFML/System/Thread.hpp>
-#include <SFML/Window/Event.hpp>
+#include "SFML/Graphics/RenderWindow.hpp"
+#include "SFML/System/Clock.hpp"
+#include "SFML/System/Time.hpp"
+#include "SFML/System/Thread.hpp"
+#include "SFML/Window/Event.hpp"
 #include <LoggerCpp/LoggerCpp.h>
 
 #include "resourcepack.hpp"

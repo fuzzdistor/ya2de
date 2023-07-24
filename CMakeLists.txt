@@ -1,11 +1,24 @@
 cmake_minimum_required(VERSION 3.16)
 project(YA2DE LANGUAGES CXX)
 
+include(FetchContent)
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS OFF)
 set(CMAKE_BUILD_TYPE DEBUG)
 set(CMAKE_CXX_STANDARD 20)
 
-find_package(SFML 2.5.1 REQUIRED graphics window system audio)
+FetchContent_Declare(
+        sfml
+        GIT_REPOSITORY https://github.com/sfml/sfml.git
+        GIT_TAG        2.6.0
+)
+
+FetchContent_GetProperties(sfml)
+
+if(NOT sfml_POPULATED)
+    FetchContent_Populate(sfml)
+    add_subdirectory(${sfml_SOURCE_DIR} ${sfml_BINARY_DIR})
+endif()
 
 include_directories(
   "${CMAKE_SOURCE_DIR}/include"
@@ -13,11 +26,11 @@ include_directories(
   "${CMAKE_SOURCE_DIR}/extlibs/Sol2/include"
   "${CMAKE_SOURCE_DIR}/extlibs/lua-5.4.4/src"
   "${CMAKE_SOURCE_DIR}/extlibs/nlohmann-json/include"
-  ${SFML_INCLUDE_DIR}
 )
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/extlibs/LoggerCpp")
 add_subdirectory("${CMAKE_SOURCE_DIR}/extlibs/Sol2")
+add_subdirectory("${CMAKE_SOURCE_DIR}/extlibs/lua-5.4.4")
 add_subdirectory("${CMAKE_SOURCE_DIR}/extlibs/nlohmann-json")
 
 add_executable("${CMAKE_PROJECT_NAME}"
@@ -90,6 +103,6 @@ if(CMAKE_BUILD_TYPE MATCHES RELEASE)
     target_link_libraries("${CMAKE_PROJECT_NAME}" ${SFML_LIBRARIES} sfml-graphics sfml-window sfml-system sfml-audio LoggerCpp sol2 lua)
 endif()
 if(CMAKE_BUILD_TYPE MATCHES DEBUG)
-    target_link_libraries("${CMAKE_PROJECT_NAME}" ${SFML_LIBRARIES} sfml-graphics-d sfml-window-d sfml-system-d sfml-audio-d LoggerCpp sol2 lua)
+    target_link_libraries("${CMAKE_PROJECT_NAME}" ${SFML_LIBRARIES} sfml-graphics sfml-window sfml-system sfml-audio LoggerCpp sol2 lua)
 endif()
 
